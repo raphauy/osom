@@ -6,6 +6,7 @@ import { getDataClientOfUser } from "./admin/clients/(crud)/actions"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { HomeIcon } from "lucide-react"
 import getClients from "@/services/clientService"
+import Link from "next/link"
 
 export default async function Home() {
   const session= await getSession()
@@ -32,23 +33,25 @@ export default async function Home() {
       {clients.map(client => (
         <div key={client.id} className="flex flex-col items-center">
           <p className="mt-10 mb-3 text-2xl font-bold text-center">{client.name}</p>
-          <Card className="w-64">
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Propiedades</CardTitle>
-              <HomeIcon className="text-gray-500" size={20} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">254</div>
-              <div className="flex justify-between">
-                <p className="text-xs text-muted-foreground">
-                  25% alquiler
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  35% venta
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          <Link href={`/client/${client.slug}`}>
+            <Card className="w-64">
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">Propiedades</CardTitle>
+                <HomeIcon className="text-gray-500" size={20} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">254</div>
+                <div className="flex justify-between">
+                  <p className="text-xs text-muted-foreground">
+                    25% alquiler
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    35% venta
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
       ))
       }
