@@ -15,6 +15,8 @@ export default async function Home() {
 
   const user= session.user
 
+  console.log("user: ", user.email)  
+
   if (user.role === "cliente") {
     const client= await getDataClientOfUser(user.id)
     if (!client) return <div>Usuario sin cliente asignado</div>
