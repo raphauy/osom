@@ -1,3 +1,4 @@
+import { Percentages } from "@/app/admin/clients/(crud)/actions";
 import { prisma } from "@/lib/db";
 
 export default async function getPropertys() {
@@ -23,6 +24,27 @@ export async function getPropertiesOfClient(clientId: string) {
   })
 
   return found;
+}
+
+export async function getPercentages(clientId: string): Promise<Percentages> {
+  
+    const found = await prisma.property.findMany({
+      where: {
+        clientId
+      },
+      select: {
+        enVenta: true,
+        enAlquiler: true,
+      },
+    })
+  
+    const sales = found.filter((property) => property.enVenta === 'si').length
+    const rents = found.filter((property) => property.enAlquiler === 'si').length
+  
+    return {
+      sales: `${sales}`,
+      rents: `${rents}`,
+    }
 }
 
 

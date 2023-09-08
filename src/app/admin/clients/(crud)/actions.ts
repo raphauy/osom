@@ -5,7 +5,7 @@ import { Client } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { ClientFormValues } from "./clientForm";
 import { getUser } from "@/services/userService";
-import { getPropertiesCount } from "@/services/propertyService";
+import { getPercentages, getPropertiesCount } from "@/services/propertyService";
 
 export type DataClient = {
     id: string
@@ -14,6 +14,8 @@ export type DataClient = {
     descripcion: string
     url: string
     cantPropiedades: number
+    rentPercentage?: string
+    salePercentage?: string
   }
     
 
@@ -72,12 +74,19 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
     return data
 }
 
+export type Percentages = {
+    sales: string
+    rents: string
+}
+
 export async function getDataClients() {
     const clients= await getClients()
 
     const data: DataClient[] = await Promise.all(
         clients.map(async (client) => {
             const propertiesCount = await getPropertiesCount(client.id);
+            const percentages= await getPercentages(client.id)
+
             return {
                 id: client.id,
                 nombre: client.name,
@@ -85,6 +94,8 @@ export async function getDataClients() {
                 descripcion: client.description || "",
                 url: client.url || "",
                 cantPropiedades: propertiesCount,
+                rentPercentage: percentages?.rents,
+                salePercentage: percentages?.sales,
             };
         })
     );
