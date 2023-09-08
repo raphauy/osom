@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button"
 import getSession from "@/lib/auth"
 import { getUsersOfClient } from "@/services/userService"
 import { redirect } from "next/navigation"
-import { getDataClientOfUser } from "./admin/clients/(crud)/actions"
+import { getDataClientOfUser, getDataClients } from "./admin/clients/(crud)/actions"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { HomeIcon } from "lucide-react"
 import getClients from "@/services/clientService"
@@ -24,7 +24,7 @@ export default async function Home() {
     return redirect(`/client/${client.slug}`)
   }
 
-  const clients= await getClients()
+  const clients= await getDataClients()
 
 
 
@@ -34,7 +34,7 @@ export default async function Home() {
       <div className="grid max-w-xl grid-cols-1 gap-10 sm:grid-cols-2">
       {clients.map(client => (
         <div key={client.id} className="flex flex-col items-center">
-          <p className="mt-10 mb-3 text-2xl font-bold text-center">{client.name}</p>
+          <p className="mt-10 mb-3 text-2xl font-bold text-center">{client.nombre}</p>
           <Link href={`/client/${client.slug}`}>
             <Card className="w-64">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
@@ -42,13 +42,13 @@ export default async function Home() {
                 <HomeIcon className="text-gray-500" size={20} />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">254</div>
+                <div className="text-2xl font-bold">{client.cantPropiedades}</div>
                 <div className="flex justify-between">
                   <p className="text-xs text-muted-foreground">
-                    25% alquiler
+                    x% alquiler
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    35% venta
+                    y% venta
                   </p>
                 </div>
               </CardContent>
