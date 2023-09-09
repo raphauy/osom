@@ -11,9 +11,7 @@ export default function MenuOsom() {
     const [clients, setClients] = useState<DataClient[]>([])
     const searchParams= useSearchParams()
 
-    useEffect(() => {
-        console.log("path", path)      
-        
+    useEffect(() => {       
         getDataClients().then(setClients)
     }, [searchParams, path])
 

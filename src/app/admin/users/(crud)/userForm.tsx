@@ -1,4 +1,4 @@
-"use user"
+"use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ControllerRenderProps, useForm } from "react-hook-form"
@@ -179,7 +179,7 @@ export function UserForm({ id, create, update, closeDialog }: Props) {
       />
       <div className="flex justify-end">
           <Button onClick={() => closeDialog()} type="button" variant={"secondary"} className="w-32">Cancelar</Button>
-          <Button type="submit" className="w-32 ml-2" >{loading ? <LoadingSpinnerChico /> : <p>Save</p>}</Button>
+          <Button type="submit" className="w-32 ml-2" >{loading ? <LoadingSpinnerChico /> : <p>Guardar</p>}</Button>
         </div>
       </form>
     </Form>

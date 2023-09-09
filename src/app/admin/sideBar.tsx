@@ -1,7 +1,7 @@
 "use client"
 
 import clsx from "clsx";
-import { Briefcase, LayoutDashboard, User } from "lucide-react";
+import { Briefcase, FlaskConical, LayoutDashboard, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -20,6 +20,9 @@ export default function SideBar() {
 
   const clientsSelected= path.endsWith("clients")
   const clients= clsx(commonClasses, clientsSelected  && selectedClasses)
+
+  const testsSelected= path.endsWith("tests")
+  const tests= clsx(commonClasses, testsSelected  && selectedClasses)
 
   const pClasses= "hidden sm:block lg:w-36"
 
@@ -42,6 +45,14 @@ export default function SideBar() {
         <Link href="/admin/clients" className={clients}>
           <Briefcase />
           <p className={pClasses}>Clientes</p>                  
+        </Link>
+
+
+        {divider()}
+
+        <Link href="/admin/tests" className={tests}>
+          <FlaskConical />
+          <p className={pClasses}>Pruebas</p>                  
         </Link>
 
 
