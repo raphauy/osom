@@ -25,12 +25,15 @@ const formSchema = z.object({
     prompt: z.string(({required_error: "Tienes que escribir un prompt."})),
     input: z.string(({required_error: "Tienes que escribir un input."})),
     model: z.string(({required_error: "Tienes que seleccionar un modelo."})),
+    limit: z.string().refine((val) => !isNaN(Number(val)), { message: "(debe ser un número)" }).optional(),
 })
 
 export type ToolValues = z.infer<typeof formSchema>
 
 // This can come from your database or API.
-const defaultValues: Partial<ToolValues> = {}
+const defaultValues: Partial<ToolValues> = {
+    limit: "5",
+}
 
 interface Props{
   update: (json: ToolValues) => Promise<SimilaritySearchResult[] | null>
@@ -124,33 +127,46 @@ export function TestTool({ update }: Props) {
                     </FormItem>
                 )}
                 /> 
-                <FormField
-                control={form.control}
-                name="model"
-                render={({ field }) => (
-                    <FormItem>
-                    <FormLabel>Modelo</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                            <SelectTrigger>
-                                { form.getValues("model") ?
-                                    <SelectValue className="text-muted-foreground">{form.getValues("model")}</SelectValue> :
-                                    <SelectValue className="text-muted-foreground">{models[0]}</SelectValue>
-                                }
-                                
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                        {models.map(model => (
-                            <SelectItem key={model} value={model}>{model}</SelectItem>
-                        ))
-                        }
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                    </FormItem>
-                )}
-                />
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                    control={form.control}
+                    name="model"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel>Modelo</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                                <SelectTrigger>
+                                    { form.getValues("model") ?
+                                        <SelectValue className="text-muted-foreground">{form.getValues("model")}</SelectValue> :
+                                        <SelectValue className="text-muted-foreground">{models[0]}</SelectValue>
+                                    }
+                                    
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                            {models.map(model => (
+                                <SelectItem key={model} value={model}>{model}</SelectItem>
+                            ))
+                            }
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                    <FormField control={form.control} name="limit" render={({ field }) => (
+                        <FormItem className="w-full">
+                            <FormLabel>Cantidad de propiedades a enviar a ChatGPT</FormLabel>
+                            <FormControl>
+                                <Input placeholder="" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+
+                </div>
                 <FormField control={form.control} name="input" render={({ field }) => (
                     <FormItem className="w-full">
                         <FormLabel>Input del usuario</FormLabel>
