@@ -265,6 +265,14 @@ export async function promptChatGPT(clientId: string, llmModel: string, promptTe
   })
   console.log(`result: ${result.text}`)
 
+  if (result.text.includes('SIN_RESULTADOS')) {
+    const similarityZero= { idPropiedad: 'SIN_RESULTADOS', content: 'SIN_RESULTADOS', distance: 0 }
+
+    // insert the similarityZero at the beginning of the array
+    similarityArray.unshift(similarityZero)
+    return similarityArray
+  }
+
   // filtrar las propiedades que no se mostraron y mantener el orden
   const filteredSimilarityArray: SimilaritySearchResult[]= []
   for (const item of similarityArray) {

@@ -15,8 +15,8 @@ require("dotenv").config()
 
 export async function start() {
 
-    // await updateEmbeddings()
-    // console.log("Finished updating embeddings");
+    await updateEmbeddings()
+    console.log("Finished updating embeddings");
 
     // const clientId= 'clm865amy0009jepxozqh2ff9'
     // const searchInput = "quiero comprar una casa en punta del este."

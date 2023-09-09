@@ -29,16 +29,6 @@ export default async function ClientPage({ params: { slug } }: Props) {
 
   const properties= await getPropertiesOfClient(client.id)
  
-  const tipos: TipoCant[]= properties.reduce((acc, property) => {
-    const index= acc.findIndex(item => item.tipo === property.tipo)
-    if (index === -1) {
-      acc.push({ tipo: property.tipo, cant: 1 })
-    } else {
-      acc[index].cant++
-    }
-    return acc
-  }, [] as TipoCant[])
-
   const cantCasas= properties.filter(property => property.tipo === 'Casa').length
   const cantApartamentos= properties.filter(property => property.tipo === 'Apartamento').length
   const cantOtros= properties.filter(property => (property.tipo !== 'Casa' && property.tipo !== 'Apartamento')).length

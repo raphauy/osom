@@ -2,9 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import getClients from "@/services/clientService";
 import getUsers from "@/services/userService";
 import { Briefcase, User } from "lucide-react";
-import { getDataClient, getDataClients } from "./clients/(crud)/actions";
 import Link from "next/link";
-import { getPropertiesOfClient } from "@/services/propertyService";
+import { getDataClients } from "./clients/(crud)/actions";
 
 export default async function AdminPage() {
 
