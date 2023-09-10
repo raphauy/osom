@@ -9,6 +9,11 @@ export async function POST(request: Request) {
         const json= await request.json()
         console.log("json: ", json)
 
+        const apiToken= json.apiToken
+        if (!apiToken) return NextResponse.json({ error: "apiToken is required" }, { status: 400 })
+        if (apiToken !== process.env.API_TOKEN) return NextResponse.json({ error: "Bad apiToken" }, { status: 400 })
+
+
         const model = json.model || "gpt-3.5-turbo"
         const limit = json.limit ? Number(json.limit) : 10
 
