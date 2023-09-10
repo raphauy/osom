@@ -24,11 +24,7 @@ export default async function TestPage({ searchParams }: Props) {
             //const results= await similaritySearch(clientId, data.input, 10)
             const limit= data.limit ? Number(data.limit) : 10
             const results= await promptChatGPT(clientId, data.model, data.prompt, data.input, limit)
-            
-            const idPropiedades= results.map((result) => result.idPropiedad)
     
-            const searchParams= "ids=" + idPropiedades.join(",")
-        
             return results
         } catch (error) {
             console.log(error)

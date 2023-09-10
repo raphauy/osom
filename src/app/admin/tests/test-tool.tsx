@@ -14,10 +14,10 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { prompt } from "@/services/clientService"
 import { Info } from "lucide-react"
-import { es } from "date-fns/locale"
 
 const models= ["gpt-3.5-turbo", "gpt-4"]
   
@@ -85,16 +85,6 @@ export function TestTool({ update }: Props) {
 }
 
   useEffect(() => {
-    let prompt= "Eres un agente inmobiliario y quieres ayudar a un cliente a encontrar una propiedad que se ajuste a sus necesidades.\n"
-    prompt += "Para poder responder te daré el siguiente contexto con información sobre las propiedades preseleccoinadas de nuestra base de datos: CONTEXTO: {CONTEXTO}.\n"
-    prompt += "Esto es lo que el cliente necesita: '{INPUT_CLIENTE}'.\n"
-    prompt += "La respuesta debe ser una lista de idPropiedad y estas son las reglas de selección y ordenación:\n"
-    prompt += "1) identificar intención del cliente (comprar o alquilar) y descartar las propiedades que no pueden cumplir con la intención.\n"
-    prompt += "2) identificar la zona ingresada por el usuario, la zona puede ser zona, ciudad o departamento. Si no hay alguna propiedad en la zona identificada se debe devolver solamente el texto 'SIN_RESULTADOS'.\n"
-    prompt += "3) ordenar la lista de mayor a menor coincidencia entre el input del cliente y la información de la propiedad.\n"
-    prompt += "4) en la ordenación priorizar la zona.\n"
-    prompt += "Ejemplo de tu respuesta: 120, 330, 253, 401.\n"
-    prompt += "La respuesta debe ser solo la lista de los idPropiedad seleccionadas y ordenadas, sin explicación.\n"
     form.setValue("prompt", prompt)
     form.setValue("input", "")
     form.getValues("model") || form.setValue("model", models[0])

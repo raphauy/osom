@@ -207,6 +207,7 @@ export async function updateEmbeddings() {
 
 export type SimilaritySearchResult = {
   idPropiedad: string
+  titulo: string
   content: string
   distance: number
 }
@@ -220,7 +221,7 @@ export async function similaritySearch(clientId: string, searchInput: string, li
   const embedding = pgvector.toSql(vector)
 
   const result: SimilaritySearchResult[] = 
-  await prisma.$queryRaw`SELECT "idPropiedad", content, embedding <-> ${embedding}::vector as distance FROM "Property" WHERE "clientId" = ${clientId} ORDER BY distance LIMIT ${limit}`
+  await prisma.$queryRaw`SELECT "idPropiedad", titulo, content, embedding <-> ${embedding}::vector as distance FROM "Property" WHERE "clientId" = ${clientId} ORDER BY distance LIMIT ${limit}`
   
   return result
 }
@@ -242,12 +243,6 @@ export async function promptChatGPT(clientId: string, llmModel: string, promptTe
   const contextString= JSON.stringify(context)
 
   const prompt= PromptTemplate.fromTemplate(promptTemplate)
-  const formattedPrompt= await prompt.format({
-    CONTEXTO: contextString,
-    INPUT_CLIENTE: userInput,
-  })
-  //console.log(`formattedPrompt: ${formattedPrompt}`);
-  
 
   const llm = new OpenAI({
     openAIApiKey: process.env.OPENAI_API_KEY,
@@ -255,7 +250,7 @@ export async function promptChatGPT(clientId: string, llmModel: string, promptTe
     modelName: llmModel,
   })
   console.log(`llmModel: ${llmModel}`)
-  
+  console.log("input: ", userInput)        
 
   const chain= new LLMChain( { llm, prompt } )
 
@@ -266,7 +261,7 @@ export async function promptChatGPT(clientId: string, llmModel: string, promptTe
   console.log(`result: ${result.text}`)
 
   if (result.text.includes('SIN_RESULTADOS')) {
-    const similarityZero= { idPropiedad: 'SIN_RESULTADOS', content: 'SIN_RESULTADOS', distance: 0 }
+    const similarityZero= { idPropiedad: 'SIN_RESULTADOS', titulo: 'SIN_RESULTADOS', content: 'SIN_RESULTADOS', distance: 0 }
 
     // insert the similarityZero at the beginning of the array
     similarityArray.unshift(similarityZero)
