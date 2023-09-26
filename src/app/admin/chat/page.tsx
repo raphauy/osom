@@ -3,11 +3,12 @@
 import { useRef } from "react";
 import { useChat } from "ai/react";
 import clsx from "clsx";
-import { Bot, Loader, SendIcon, User } from "lucide-react";
+import { Bot, Loader, RefreshCcw, SendIcon, User } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import LoadingSpinner, { LoadingSpinnerChico } from "@/components/loadingSpinner";
 import Textarea from "react-textarea-autosize";
+import { useRouter } from "next/navigation";
 
 const examples = [
   "Busco casa para la venta en La Tahona, preferentemente con piscina",
@@ -21,6 +22,7 @@ export default function Chat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const { messages, input, setInput, handleSubmit, isLoading } = useChat({});
+  const router = useRouter()
 
   const disabled = isLoading || input.length === 0;
 
@@ -117,7 +119,7 @@ export default function Chat() {
           />
           <button
             className={clsx(
-              "absolute inset-y-0 right-3 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all",
+              "absolute inset-y-0 right-4 my-auto flex h-8 w-8 items-center justify-center rounded-md transition-all",
               disabled
                 ? "cursor-not-allowed bg-white"
                 : "bg-green-500 hover:bg-green-600",
@@ -136,6 +138,13 @@ export default function Chat() {
             )}
           </button>
         </form>
+        <button
+            className="right-0 block p-2 transition-all duration-75 bg-white rounded-full shadow-lg lg:fixed bottom-14 hover:bg-gray-100"            
+            onClick={() => window.location.reload()}
+          >
+            <RefreshCcw size={15}/>
+        </button>
+        
         <p className="text-xs text-center text-gray-400">
           Creado por {" "}
           <a
@@ -158,6 +167,7 @@ export default function Chat() {
           .
         </p>
       </div>
+
     </main>
   );
 }
