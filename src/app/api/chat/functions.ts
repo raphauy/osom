@@ -1,8 +1,5 @@
-import { CompletionCreateParams } from "openai/resources/chat/index.mjs";
 
-
-
-export const functions: CompletionCreateParams.Function[] = [
+export const functions= [
   {
     name: "getProperties",
     description:
