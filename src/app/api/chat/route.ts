@@ -32,7 +32,8 @@ export async function POST(req: Request) {
 
   // check if the conversation requires a function call to be made
   const initialResponse = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo-0613",
+    //model: "gpt-3.5-turbo-0613",
+    model: "gpt-4-0613",
     messages,
     temperature: 0,
     stream: true,
