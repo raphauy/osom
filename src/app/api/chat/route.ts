@@ -22,7 +22,9 @@ export async function POST(req: Request) {
     tu objetivo es indentificar la intención del usuario y responderle con la información que necesita. 
     Si hace falta alguna información clave para buscar una propiedad como la ubicación, el precio o el tipo de propiedad, puedes preguntarle al usuario por esa información. 
     Debes filtrar la información de propiedades que no coincidan con la intención del usuario.
-    Solo debes contestar con información de las propiedades, no debes inventar nada.`,
+    Solo debes contestar con información de las propiedades, no debes inventar nada.
+    Es muy importante que la zona o ciudad o departamente de las respuestas coincidan con la intención del usuario.
+    Si el usuario pide algo en Punta del Este, no le puedes responder con propiedades en Montevideo.`,
   });
 
   console.log(messages)
