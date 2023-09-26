@@ -28,6 +28,7 @@
     "@types/node": "20.5.9",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "ai": "^2.2.13",
     "autoprefixer": "10.4.15",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -43,12 +44,16 @@
     "next-themes": "^0.2.1",
     "node-postgres": "^0.6.2",
     "nodemailer": "^6.9.4",
+    "openai": "^4.10.0",
     "pgvector": "^0.1.5",
     "postcss": "8.4.29",
     "prisma": "^5.2.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.1",
+    "react-markdown": "^8.0.7",
+    "react-textarea-autosize": "^8.5.3",
+    "remark-gfm": "^4.0.0",
     "tailwind-merge": "^1.14.0",
     "tailwindcss": "3.3.3",
     "tailwindcss-animate": "^1.0.7",
@@ -56,5 +61,8 @@
     "typescript": "5.2.2",
     "xlsx": "^0.18.5",
     "zod": "^3.21.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.10"
   }
 }
