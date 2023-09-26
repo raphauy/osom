@@ -22,7 +22,8 @@ export const functions: CompletionCreateParams.Function[] = [
 
 
 export async function getProperties(description: string){
-  const apiUrl = 'http://localhost:3000/api/propiedades'
+  //const apiUrl = 'http://localhost:3000/api/propiedades'
+  const apiUrl = 'https://osom.rapha.uy/api/propiedades'
   const requestData = {
     apiToken: 'randomTokenCreatedByRC',
     clientId: 'clm865amy0009jepxozqh2ff9',
