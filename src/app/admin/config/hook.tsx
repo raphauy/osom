@@ -18,6 +18,7 @@ export default function Hook({clientId}: Props) {
     const [value, copy] = useCopyToClipboard()
     const [hook, setHook] = useState(`https://osom.rapha.uy/api/${clientId}/conversation`)
     const [endPoint, setEndPoint] = useState("No configurado")
+    const [updateAPIEndpoint, setUpdateAPIEndpoint] = useState(`https://osom.rapha.uy/api/${clientId}/update`)
 
     useEffect(() => {
         getDataClient(clientId).then((data) => {
@@ -38,9 +39,9 @@ export default function Hook({clientId}: Props) {
         toast({title: "Endpoint copiado" })
     }
 
-    function copyClientIdToClipboard(){   
-        copy(clientId)    
-        toast({title: "Client Id copiado" })
+    function copyUpdateAPIEndpointIdToClipboard(){   
+        copy(updateAPIEndpoint)    
+        toast({title: "Update API Endpoint copiado" })
     }
 
     const editTrigger= (<Edit size={30} className="pr-2 hover:cursor-pointer"/>)
@@ -59,9 +60,8 @@ export default function Hook({clientId}: Props) {
             </div>
 
             <div className="flex items-center gap-4 pb-3 mb-3 border-b">
-                <p><strong>Id de cliente:</strong></p>
-                <p>{clientId}</p>
-                <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyClientIdToClipboard} /></Button>
+                <p><strong>Update API Endpoint:</strong>{updateAPIEndpoint}</p>
+                <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyUpdateAPIEndpointIdToClipboard} /></Button>
             </div>
         </div>
     )
