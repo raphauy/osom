@@ -38,6 +38,11 @@ export default function Hook({clientId}: Props) {
         toast({title: "Endpoint copiado" })
     }
 
+    function copyClientIdToClipboard(){   
+        copy(clientId)    
+        toast({title: "Client Id copiado" })
+    }
+
     const editTrigger= (<Edit size={30} className="pr-2 hover:cursor-pointer"/>)
 
     return (
@@ -51,6 +56,11 @@ export default function Hook({clientId}: Props) {
                 <p><strong>Saliente</strong>: {endPoint}</p>
                 <EndpointDialog update={update} title="Configurar WhatsApp Endpoint" trigger={editTrigger} id={clientId} />
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyEndPointToClipboard} /></Button>
+            </div>
+
+            <div className="flex items-center gap-4 pb-3 mb-3 border-b">
+                <p><strong>Copiar id de cliente:</strong></p>
+                <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyClientIdToClipboard} /></Button>
             </div>
         </div>
     )
