@@ -38,8 +38,8 @@ export async function getDataConversation(conversationId: string): Promise<DataC
 function getData(conversation: Conversation & { messages: Message[], client: Client }): DataConversation {
     const data: DataConversation= {
         id: conversation.id,
-        fecha: getFormat(conversation.createdAt),
-        updatedAt: format(utcToZonedTime(conversation.updatedAt, 'America/Montevideo'), "yyyy/MM/dd HH:mm"),
+        fecha: getFormat(utcToZonedTime(conversation.createdAt, 'America/Montevideo')),
+        updatedAt: getFormat(utcToZonedTime(conversation.updatedAt, 'America/Montevideo')),
         celular: conversation.phone,
         messages: conversation.messages.map((message: Message) => ({
             id: message.id,
