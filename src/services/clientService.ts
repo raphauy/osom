@@ -90,3 +90,18 @@ export async function deleteClient(id: string) {
 
   return deleted
 }
+
+export async function setWhatsAppEndpoing(whatsappEndpoint: string, clientId: string) {
+  const client= await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      whatsappEndpoint
+    }
+  })
+
+  return client  
+
+  
+}

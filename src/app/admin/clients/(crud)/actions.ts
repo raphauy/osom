@@ -16,6 +16,7 @@ export type DataClient = {
     cantPropiedades: number
     rentPercentage?: string
     salePercentage?: string
+    whatsAppEndpoint: string | null
   }
     
 
@@ -32,6 +33,7 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         descripcion: client.description || '',
         url: client.url || '',
         cantPropiedades: propertiesCount,
+        whatsAppEndpoint: client.whatsappEndpoint
     }
     return data
 }
@@ -52,6 +54,7 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         descripcion: client.description || '',
         url: client.url || '',
         cantPropiedades: propertiesCount,
+        whatsAppEndpoint: client.whatsappEndpoint
     }
     return data
 }
@@ -70,6 +73,7 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         descripcion: client.description || '',
         url: client.url || '',
         cantPropiedades: propertiesCount,
+        whatsAppEndpoint: client.whatsappEndpoint
     }
     return data
 }
@@ -96,6 +100,7 @@ export async function getDataClients() {
                 cantPropiedades: propertiesCount,
                 rentPercentage: percentages?.rents,
                 salePercentage: percentages?.sales,
+                whatsAppEndpoint: client.whatsappEndpoint
             };
         })
     );

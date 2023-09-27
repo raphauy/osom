@@ -70,6 +70,7 @@ model Client {
   users             User[]
   properties        Property[]
   conversations     Conversation[]
+  whatsappEndpoint  String?
 }
 
 model Property {
