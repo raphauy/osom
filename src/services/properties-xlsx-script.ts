@@ -15,7 +15,7 @@ export async function start() {
 
 
   // Carga el archivo .xlsx
-  const workbook = XLSX.readFile('propiedades_hus.xlsx');
+  const workbook = XLSX.readFile('propiedades_nai.xls');
 
   // Obtiene la primera hoja del archivo
   const sheetName = workbook.SheetNames[0];

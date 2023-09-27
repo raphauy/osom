@@ -157,6 +157,7 @@ export async function updateEmbeddings() {
   titulo,
   descripcion
   FROM "Property"`;
+  //FROM "Property" LIMIT 1`;
 
   for (const property of properties) {
     let textToEmbed= property.tipo

@@ -1,4 +1,6 @@
 propiedades_hus.xlsx
+*.xls
+*.xlsx
 
 
 # dependencies
