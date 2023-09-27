@@ -57,7 +57,7 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
 
 function getFormat(date: Date): string {
     // if date is today return only the time
-    const today= new Date()
+    const today= utcToZonedTime(new Date(), 'America/Montevideo')
     if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
         return format(date, "HH:mm")
     } else {
