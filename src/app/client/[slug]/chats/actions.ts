@@ -61,7 +61,7 @@ function getFormat(date: Date): string {
     if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
         return format(date, "HH:mm")
     } else {
-        return format(date, "yyyy/MM/dd HH:mm")
+        return format(date, "yyyy/MM/dd")
     }
 }
 
