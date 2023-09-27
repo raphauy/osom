@@ -6,6 +6,7 @@ import { getPropertiesOfClient } from "@/services/propertyService"
 import { getUsersOfClient } from "@/services/userService"
 import { HomeIcon, MessageCircle, User } from "lucide-react"
 import Link from "next/link"
+import { getDataConversations, getTotalMessages } from "./chats/actions"
 
 interface Props{
   params: {
@@ -28,6 +29,9 @@ export default async function ClientPage({ params: { slug } }: Props) {
   const users= await getUsersOfClient(client?.id)
 
   const properties= await getPropertiesOfClient(client.id)
+
+  const conversations= await getDataConversations(client.id)
+  const messages= await getTotalMessages(client.id)
  
   const cantCasas= properties.filter(property => property.tipo === 'Casa').length
   const cantApartamentos= properties.filter(property => property.tipo === 'Apartamento').length
@@ -77,10 +81,10 @@ export default async function ClientPage({ params: { slug } }: Props) {
                 <MessageCircle className="text-gray-500" size={20} />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">0</div>
+                <div className="text-2xl font-bold">{conversations.length}</div>
                 <div className="flex justify-between">
                   <p className="text-xs text-muted-foreground">
-                    no implementado
+                    {messages === 0 ? 'no hay mensajes' : `${messages} mensajes`}
                   </p>
                 </div>
               </CardContent>

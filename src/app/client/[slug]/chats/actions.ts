@@ -73,6 +73,17 @@ export async function getDataConversations(clientId: string) {
     return data    
 }
 
+export async function getTotalMessages(clientId: string) {
+    const conversations= await getConversationsOfClient(clientId)
+
+    let total= 0
+    conversations.forEach(conversation => {
+        total+= conversation.messages.length
+    })
+    return total
+    
+}
+
 
 export async function eliminate(conversationId: string): Promise<Conversation | null> {    
     const deleted= await deleteConversation(conversationId)
