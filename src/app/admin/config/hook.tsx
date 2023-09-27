@@ -60,7 +60,7 @@ export default function Hook({clientId}: Props) {
             </div>
 
             <div className="flex items-center gap-4 pb-3 mb-3 border-b">
-                <p><strong>Update API Endpoint:</strong>{updateAPIEndpoint}</p>
+                <p><strong>Update API Endpoint</strong>: {updateAPIEndpoint}</p>
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyUpdateAPIEndpointIdToClipboard} /></Button>
             </div>
         </div>
