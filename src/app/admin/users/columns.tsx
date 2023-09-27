@@ -62,7 +62,7 @@ export const columns: ColumnDef<DataUser>[] = [
       )
     },
     cell: ({ row }) => {
-      const data = row.original     
+      const data = row.original
       if (!data.verificado) return <div></div> 
       return (<p>{data.verificado && format(data.verificado, "MMMM dd, yyyy", { locale: es})}</p>)
     },

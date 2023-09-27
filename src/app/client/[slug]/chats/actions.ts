@@ -1,9 +1,10 @@
 "use server"
 
-import { revalidatePath } from "next/cache";
-import { Client, Conversation, Message } from "@prisma/client";
-import { deleteConversation, getConversation, getConversationsOfClient } from "@/services/conversationService";
-import { format } from "date-fns";
+import { revalidatePath } from "next/cache"
+import { Client, Conversation, Message } from "@prisma/client"
+import { deleteConversation, getConversation, getConversationsOfClient } from "@/services/conversationService"
+import { format } from "date-fns"
+import { utcToZonedTime } from "date-fns-tz"
 
 export type DataMessage = {
     id: string
@@ -38,11 +39,11 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
     const data: DataConversation= {
         id: conversation.id,
         fecha: getFormat(conversation.createdAt),
-        updatedAt: format(conversation.updatedAt, "yyyy/MM/dd HH:mm"),
+        updatedAt: format(utcToZonedTime(conversation.updatedAt, 'America/Montevideo'), "yyyy/MM/dd HH:mm"),
         celular: conversation.phone,
         messages: conversation.messages.map((message: Message) => ({
             id: message.id,
-            fecha: getFormat(message.createdAt),
+            fecha: getFormat(utcToZonedTime(message.createdAt, 'America/Montevideo')),
             updatedAt: message.updatedAt,
             role: message.role,
             content: message.content
