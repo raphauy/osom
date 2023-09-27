@@ -69,6 +69,7 @@ model Client {
   updatedAt         DateTime  @updatedAt
   users             User[]
   properties        Property[]
+  conversations     Conversation[]
 }
 
 model Property {
@@ -113,4 +114,24 @@ model Property {
 
   content               String?
   embedding Unsupported("vector(1536)")?
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  phone     String
+  messages  Message[]
+  client    Client  @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  clientId  String
+}
+
+model Message {
+  id             String      @id @default(cuid())
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  role           String
+  content        String      @db.Text
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 }

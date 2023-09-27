@@ -1,0 +1,83 @@
+"use server"
+
+import { revalidatePath } from "next/cache";
+import { Client, Conversation, Message } from "@prisma/client";
+import { deleteConversation, getConversation, getConversationsOfClient } from "@/services/conversationService";
+import { format } from "date-fns";
+
+export type DataMessage = {
+    id: string
+    fecha: string
+    updatedAt: Date
+    role: string
+    content: string
+}
+
+export type DataConversation = {
+    id: string
+    fecha: string
+    updatedAt: string
+    celular: string
+    messages: DataMessage[]
+    clienteNombre: string
+    clienteSlug: string
+    clienteId?: string
+}
+      
+
+export async function getDataConversation(conversationId: string): Promise<DataConversation | null>{
+    const conversation= await getConversation(conversationId)
+    if (!conversation) return null
+
+    const data= getData(conversation)
+    console.log("fecha: " + conversation.createdAt);
+    
+    return data
+}
+function getData(conversation: Conversation & { messages: Message[], client: Client }): DataConversation {
+    const data: DataConversation= {
+        id: conversation.id,
+        fecha: getFormat(conversation.createdAt),
+        updatedAt: format(conversation.updatedAt, "yyyy/MM/dd HH:mm"),
+        celular: conversation.phone,
+        messages: conversation.messages.map((message: Message) => ({
+            id: message.id,
+            fecha: getFormat(message.createdAt),
+            updatedAt: message.updatedAt,
+            role: message.role,
+            content: message.content
+        })),
+        clienteNombre: conversation.client.name,
+        clienteSlug: conversation.client.slug,
+        clienteId: conversation.clientId
+    }
+    return data
+}
+
+function getFormat(date: Date): string {
+    // if date is today return only the time
+    const today= new Date()
+    if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
+        return format(date, "HH:mm")
+    } else {
+        return format(date, "yyyy/MM/dd HH:mm")
+    }
+}
+
+export async function getDataConversations(clientId: string) {
+    const conversations= await getConversationsOfClient(clientId)
+
+    const data: DataConversation[]= conversations.map(conversation => getData(conversation))
+    
+    return data    
+}
+
+
+export async function eliminate(conversationId: string): Promise<Conversation | null> {    
+    const deleted= await deleteConversation(conversationId)
+
+    revalidatePath(`/admin/conversations`)
+
+    return deleted
+}
+

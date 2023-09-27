@@ -1,4 +1,8 @@
 import { getClientBySlug } from "@/services/clientService"
+import { DataTable } from "./data-table"
+import { columns } from "./columns"
+import { getDataConversations } from "./actions"
+import { MoveLeft } from "lucide-react"
 
 interface Props {
     params: {
@@ -11,13 +15,13 @@ export default async function ChatPage({ params: { slug } }: Props) {
     const client= await getClientBySlug(slug)
     if (!client) return <div>Cliente no encontrado</div>
 
-    return (
-        <div className="w-full">
-            <div className="flex items-center justify-center my-4">
-                <p className="text-2xl font-bold dark:text-white">Chats de {client.name}</p>
-            </div>
+    const data= await getDataConversations(client.id)
 
-            <div className="mt-10 text-xl text-center text-muted-foreground">No implementdo</div>
+    return (
+        <div className="flex items-center justify-center w-full gap-4 mt-32 text-2xl">
+            
+            <MoveLeft /> <p>Seleccione un chat</p>
+
         </div>
     )
 }

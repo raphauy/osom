@@ -21,7 +21,7 @@ export default function SideBar({ slug }: Props) {
   const propertiesSelected= path.endsWith("properties")
   const properties= clsx(commonClasses, propertiesSelected  && selectedClasses)
 
-  const chatsSelected= path.endsWith("chats")
+  const chatsSelected= path.includes("chats")
   const chats= clsx(commonClasses, chatsSelected  && selectedClasses)
 
   const usersSelected= path.endsWith("users")

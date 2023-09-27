@@ -22,7 +22,6 @@ export default function Chat() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const { messages, input, setInput, handleSubmit, isLoading } = useChat({});
-  const router = useRouter()
 
   const disabled = isLoading || input.length === 0;
 

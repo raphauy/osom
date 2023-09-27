@@ -1,7 +1,7 @@
 "use client"
 
 import clsx from "clsx";
-import { Briefcase, FlaskConical, LayoutDashboard, MessageCircle, User } from "lucide-react";
+import { Briefcase, FlaskConical, LayoutDashboard, MessageCircle, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -27,11 +27,14 @@ export default function SideBar() {
   const chatSelected= path.endsWith("chat")
   const chat= clsx(commonClasses, chatSelected  && selectedClasses)
 
+  const configSelected= path.endsWith("config")
+  const config= clsx(commonClasses, configSelected  && selectedClasses)
+
   const pClasses= "hidden sm:block lg:w-36"
 
   return (
-    <>
-      <section className="flex flex-col gap-3 py-4 mt-3 border-r border-r-osom-color/50">
+    <div className="flex flex-col justify-between border-r border-r-osom-color/50">
+      <section className="flex flex-col gap-3 py-4 mt-3 ">
 
         <Link href="/admin" className={dashboard}>
           <LayoutDashboard size={23} />
@@ -67,7 +70,15 @@ export default function SideBar() {
 
 
       </section>
-    </>
+      <section className="mb-4">
+        {divider()}
+        
+        <Link href="/admin/config" className={config}>
+          <Settings />
+          <p className={pClasses}>Config</p>                  
+        </Link>
+      </section>
+    </div>
   );
 }
 

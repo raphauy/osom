@@ -15,15 +15,26 @@ export const functions= [
       required: ["description"],
     },
   },
+  {
+    name: "notifyHuman",
+    description:
+      "Se debe invocar esta función para notificar a un agente inmobiliario cuando la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita.",
+    parameters: {
+      type: "object",
+      properties: {},
+      required: [],
+    },
+  },
 ];
 
 
-export async function getProperties(description: string){
+export async function getProperties(description: string, clientId: string){
   //const apiUrl = 'http://localhost:3000/api/propiedades'
   const apiUrl = 'https://osom.rapha.uy/api/propiedades'
   const requestData = {
-    apiToken: 'randomTokenCreatedByRC',
-    clientId: 'clm865amy0009jepxozqh2ff9',
+    //apiToken: 'randomTokenCreatedByRC',
+    apiToken: process.env.API_TOKEN,
+    clientId,
     limit: '5',
     input: description
   }
@@ -40,12 +51,19 @@ export async function getProperties(description: string){
   return responseData
 }
 
+export async function notifyHuman(clientId: string){
+  console.log("notifyHuman")
+  return "dile al usuario que un agente inmobiliario se va a comunicar con él, saluda y finaliza la conversación. No ofrezcas más ayuda, saluda y listo."
+}
 
-export async function runFunction(name: string, args: any) {
+
+export async function runFunction(name: string, args: any, clientId: string) {
   switch (name) {
     case "getProperties":
-      return getProperties(args["description"]);
-        default:
+      return getProperties(args["description"], clientId);
+    case "notifyHuman":
+      return notifyHuman(clientId);
+          default:
       return null;
   }
 }
