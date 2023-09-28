@@ -15,12 +15,15 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
 
   if (!osomEndpoint) throw new Error("whatsappEndpoint not found")
 
+  let text= quitarCorchetes(body)
+  text= quitarParentesis(text)
+
   const headers = {
     'Content-Type': 'application/json',
   }
   const data = {
     phone,
-    body,
+    body: text,
     agente
   } 
 
@@ -35,4 +38,52 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
   } catch (error) {
     console.error('Error:', error);
   }
+}
+
+// modificar el texto para transformar enlaces en formato Markdown en texto en negrita en formato whatsapp (ejemplo: texto en *negrita*) seguido de la url exacta
+export function transformText(text: string): string {
+  const regex= /\[([^\]]+)\]\(([^)]+)\)/g
+  const matches= text.matchAll(regex)
+  let transformedText= text
+  for (const match of matches as any) {
+    const original= match[0]
+    const url= match[2]
+    const text= match[1]
+    transformedText= transformedText.replace(original, `*${text}* ${url}`)
+  }
+  return transformedText
+}
+
+// función que quita los paréntesis curvos, ejemplo: este texto (tiene parentesis) y lo transforma en este texto tiene parentesis
+export function quitarParentesis(text: string): string {
+  const regex= /\(([^\)]+)\)/g
+  const matches= text.matchAll(regex)
+  let transformedText= text
+  for (const match of matches as any) {
+    const original= match[0]
+    const text= match[1]
+    transformedText= transformedText.replace(original, text)
+  }
+  return transformedText
+}
+
+// función que transforma el texto '[aquí]' en el texto 'aquí: '
+export function quitarCorchetes(text: string): string {
+  const regex= /\[([^\]]+)\]/g
+  const matches= text.matchAll(regex)
+  let transformedText= text
+  for (const match of matches as any) {
+    const original= match[0]
+    const text= match[1]
+    transformedText= transformedText.replace(original, `${text}: `)
+  }
+  return transformedText
+}
+
+// función test para quitarParentesis
+export function start() {
+  const text= "Hola [texto en negrita](https://www.google.com) [texto en negrita](https://www.google.com)"
+  const text2= quitarCorchetes(text)
+  const transformedText= quitarParentesis(text2)
+  console.log(transformedText)
 }

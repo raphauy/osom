@@ -217,7 +217,7 @@ export function getSystemMessage() {
     Si el usuario pide algo en Punta del Este, no le puedes responder con propiedades en Montevideo.
     Pocitos es un barrio de Montevideo.
     Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.
-    Es importante que la respuesta esté en formato 'WhatsApp Markup Language' para que se muestre correctamente en WhatsApp, ten especial cuidado al crear los links.`,
+    Las respuestas que contengan propiedades deben poner el título en negrita con un solo asterisco (ejemplo: texto en *negrita*) seguido de la url pelada (no usar el formato markdown para links).)`,
   }
   return systemMessage
   
