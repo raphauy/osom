@@ -27,16 +27,20 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
     agente
   } 
 
-  try {
-    const response = await axios.post(osomEndpoint, data, {
-      headers: headers,
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false,
-      }),
-    });
-    console.log('Success:', response.data);
-  } catch (error) {
-    console.error('Error:', error);
+  const attempts= 3
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const response = await axios.post(osomEndpoint, data, {
+        headers: headers,
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false,
+        }),
+      });
+      console.log('Success:', response.data);
+      return
+    } catch (error) {
+      console.error('Error:', error);
+    }
   }
 }
 
