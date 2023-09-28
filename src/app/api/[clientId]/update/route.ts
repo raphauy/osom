@@ -1,6 +1,3 @@
-import { prompt } from "@/services/clientService";
-import { messageArrived, getActiveConversation, processMessage } from "@/services/conversationService";
-import { SimilaritySearchResult, promptChatGPT, similaritySearch } from "@/services/propertyService";
 import { NextResponse } from "next/server";
 
 
