@@ -16,13 +16,22 @@ export default async function ChatPage({ params: { id } }: Props) {
     const conversation= await getDataConversation(id)
     if (!conversation) return <div>Chat no encontrado</div>
 
-    const messages= conversation.messages
+    const transformedMessages= conversation.messages.map(message => {
+        if (message.content.includes("**")) return message
+        if (message.content.includes("*")) {
+            const newContent= message.content.replace(/\*/g, "**")
+            return {...message, content: newContent}
+        }
+        console.log(message.content);
+        
+        return message
+    })
 
     return (
         <main className="flex flex-col items-center justify-between w-full p-3 border-l">
             <p className="w-full pb-2 text-lg font-bold text-center border-b">{conversation.celular} ({conversation.fecha})</p>
           {
-            messages.map((message, i) => (
+            transformedMessages.map((message, i) => (
               <div
                 key={i}
                 className={clsx(
