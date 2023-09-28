@@ -216,7 +216,8 @@ export function getSystemMessage() {
     Es muy importante que la zona o ciudad o departamente de las respuestas coincidan con la intención del usuario.
     Si el usuario pide algo en Punta del Este, no le puedes responder con propiedades en Montevideo.
     Pocitos es un barrio de Montevideo.
-    Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.`,
+    Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.
+    Tu respuesta debe estar en formato 'WhatsApp Markup Language' para que se muestre correctamente en WhatsApp, ten especial cuidado al crear los links.`,
   }
   return systemMessage
   
