@@ -233,50 +233,50 @@ type ContextItem = {
   infoPropiedad: string
 }
 
-// export async function promptChatGPT(clientId: string, llmModel: string, promptTemplate: string, userInput: string, limit: number) {
-//   const similarityArray= await similaritySearch(clientId, userInput, limit)
-//   const context: ContextItem[]= similarityArray.map((item) => {
-//     return {
-//       idPropiedad: item.idPropiedad,
-//       infoPropiedad: item.content,
-//     }
-//   })
+export async function promptChatGPT(clientId: string, llmModel: string, promptTemplate: string, userInput: string, limit: number) {
+  const similarityArray= await similaritySearch(clientId, userInput, limit)
+  const context: ContextItem[]= similarityArray.map((item) => {
+    return {
+      idPropiedad: item.idPropiedad,
+      infoPropiedad: item.content,
+    }
+  })
 
-//   const contextString= JSON.stringify(context)
+  const contextString= JSON.stringify(context)
 
-//   const prompt= PromptTemplate.fromTemplate(promptTemplate)
+  const prompt= PromptTemplate.fromTemplate(promptTemplate)
 
-//   const llm = new OpenAI({
-//     openAIApiKey: process.env.OPENAI_API_KEY,
-//     temperature: 0,
-//     modelName: llmModel,
-//   })
-//   console.log(`llmModel: ${llmModel}`)
-//   console.log("input: ", userInput)        
+  const llm = new OpenAI({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    temperature: 0,
+    modelName: llmModel,
+  })
+  console.log(`llmModel: ${llmModel}`)
+  console.log("input: ", userInput)        
 
-//   const chain= new LLMChain( { llm, prompt } )
+  const chain= new LLMChain( { llm, prompt } )
 
-//   const result= await chain.call({
-//     CONTEXTO: contextString,
-//     INPUT_CLIENTE: userInput,
-//   })
-//   console.log(`result: ${result.text}`)
+  const result= await chain.call({
+    CONTEXTO: contextString,
+    INPUT_CLIENTE: userInput,
+  })
+  console.log(`result: ${result.text}`)
 
-//   if (result.text.includes('SIN_RESULTADOS')) {
-//     const similarityZero= { idPropiedad: 'SIN_RESULTADOS', titulo: 'SIN_RESULTADOS', content: 'SIN_RESULTADOS', distance: 0 }
+  if (result.text.includes('SIN_RESULTADOS')) {
+    const similarityZero= { idPropiedad: 'SIN_RESULTADOS', url: "", titulo: 'SIN_RESULTADOS', content: 'SIN_RESULTADOS', distance: 0 }
 
-//     // insert the similarityZero at the beginning of the array
-//     similarityArray.unshift(similarityZero)
-//     return similarityArray
-//   }
+    // insert the similarityZero at the beginning of the array
+    similarityArray.unshift(similarityZero)
+    return similarityArray
+  }
 
-//   // filtrar las propiedades que no se mostraron y mantener el orden
-//   const filteredSimilarityArray: SimilaritySearchResult[]= []
-//   for (const item of similarityArray) {
-//     if (result.text.includes(item.idPropiedad)) {
-//       filteredSimilarityArray.push(item)
-//     }
-//   }
+  // filtrar las propiedades que no se mostraron y mantener el orden
+  const filteredSimilarityArray: SimilaritySearchResult[]= []
+  for (const item of similarityArray) {
+    if (result.text.includes(item.idPropiedad)) {
+      filteredSimilarityArray.push(item)
+    }
+  }
   
-//   return filteredSimilarityArray  
-// }
+  return filteredSimilarityArray  
+}
