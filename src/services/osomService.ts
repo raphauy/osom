@@ -1,17 +1,20 @@
 import axios from 'axios';
 import https from 'https';
+import { getClient } from './clientService';
 
-const OSOM_ENDPOINT= process.env.OSOM_ENDPOINT;
-
-export async function sendWapMessage(phone: string, body: string, notificarAgente: boolean): Promise<void> {
+export async function sendWapMessage(phone: string, body: string, notificarAgente: boolean, clientId: string): Promise<void> {
   const agente= notificarAgente ? 1 : 0
 
   if (notificarAgente)
     console.log("Notificando agente a Osom")
-    
 
-  if (!OSOM_ENDPOINT) throw new Error("OSOM_ENDPOINT is not defined")
-  
+  const client= await getClient(clientId)
+  if (!client) throw new Error("Client not found")
+
+  const osomEndpoint= client.whatsappEndpoint
+
+  if (!osomEndpoint) throw new Error("whatsappEndpoint not found")
+
   const headers = {
     'Content-Type': 'application/json',
   }
@@ -22,7 +25,7 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
   } 
 
   try {
-    const response = await axios.post(OSOM_ENDPOINT, data, {
+    const response = await axios.post(osomEndpoint, data, {
       headers: headers,
       httpsAgent: new https.Agent({
         rejectUnauthorized: false,

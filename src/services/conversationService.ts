@@ -186,7 +186,7 @@ export async function processMessage(id: string) {
   }
 
   if (assistantResponse) {
-    sendWapMessage(conversation.phone, assistantResponse, notificarAgente)
+    sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
   } else {
     console.log("assistantResponse is null")
   }   
