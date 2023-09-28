@@ -109,6 +109,7 @@ model Property {
   superficieConstruida   String?
   monedaGastosComunes    String?
   gastosComunes          String?
+  url                    String?
 
   client                Client?   @relation(fields: [clientId], references: [id], onDelete: NoAction)
   clientId              String?

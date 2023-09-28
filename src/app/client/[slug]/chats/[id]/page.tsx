@@ -22,7 +22,6 @@ export default async function ChatPage({ params: { id } }: Props) {
             const newContent= message.content.replace(/\*/g, "**")
             return {...message, content: newContent}
         }
-        console.log(message.content);
         
         return message
     })

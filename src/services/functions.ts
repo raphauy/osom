@@ -29,10 +29,8 @@ export const functions= [
 
 
 export async function getProperties(description: string, clientId: string){
-  //const apiUrl = 'http://localhost:3000/api/propiedades'
-  const apiUrl = 'https://osom.rapha.uy/api/propiedades'
+  const apiUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000/api/propiedades' : 'https://osom.rapha.uy/api/propiedades'
   const requestData = {
-    //apiToken: 'randomTokenCreatedByRC',
     apiToken: process.env.API_TOKEN,
     clientId,
     limit: '5',

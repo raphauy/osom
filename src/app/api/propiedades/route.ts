@@ -1,5 +1,5 @@
 import { prompt } from "@/services/clientService";
-import { SimilaritySearchResult, promptChatGPT, similaritySearch } from "@/services/propertyService";
+import { SimilaritySearchResult, similaritySearch } from "@/services/propertyService";
 import { NextResponse } from "next/server";
 
 type Propiedad= {
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         const transformedResults: Propiedad[]= []
         similarityArray.forEach((item) => {
             const transformedItem= {
-                url: "https://hus.uy/propiedad/"+item.idPropiedad,
+                url: item.url,
                 titulo: item.titulo,
                 características: item.content
             }

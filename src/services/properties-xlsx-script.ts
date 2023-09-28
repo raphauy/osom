@@ -72,6 +72,7 @@ async function createPropertyWithPrisma(property: Propiedad, clientId: string) {
       superficieConstruida: property.superficie_construida ? property.superficie_construida+"" : "",
       monedaGastosComunes: property.moneda_gastos_comunes ? property.moneda_gastos_comunes+"" : "",
       gastosComunes: property.gastos_comunes ? property.gastos_comunes+"" : "",
+      url: "https://hus.uy/propiedad/"+property.id_propiedad,
       clientId
     }
   })

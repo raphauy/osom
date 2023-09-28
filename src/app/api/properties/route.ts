@@ -5,6 +5,8 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
 
+    return NextResponse.json({ error: "deprecated" }, { status: 400 })
+
     try {
         const json= await request.json()
         console.log("json: ", json)
