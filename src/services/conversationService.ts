@@ -72,7 +72,11 @@ export async function getConversation(id: string) {
     },
     include: {
       client: true,
-      messages: true
+      messages:  {
+        orderBy: {
+          createdAt: 'asc',
+        },
+      }
     },
   })
 
