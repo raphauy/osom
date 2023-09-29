@@ -48,7 +48,7 @@ export const columns: ColumnDef<Property>[] = [
     cell: ({ row }) => {
       const data = row.original     
       return (
-        <Link href={`https://hus.uy/propiedad/${data.idPropiedad}`} target="_blank">
+        <Link href={`${data.url}`} target="_blank">
           <Button variant="link" className="text-left">{data.titulo}</Button>
         </Link>
       )
