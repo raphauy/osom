@@ -27,6 +27,9 @@ export default function SideBar() {
   const chatSelected= path.endsWith("chat")
   const chat= clsx(commonClasses, chatSelected  && selectedClasses)
 
+  const experimentoSelected= path.endsWith("experimento")
+  const experimento= clsx(commonClasses, experimentoSelected  && selectedClasses)
+
   const configSelected= path.endsWith("config")
   const config= clsx(commonClasses, configSelected  && selectedClasses)
 
@@ -64,6 +67,13 @@ export default function SideBar() {
         <Link href="/admin/chat" className={chat}>
           <MessageCircle />
           <p className={pClasses}>Chat</p>                  
+        </Link>
+
+        {divider()}
+
+        <Link href="/admin/experimento" className={experimento}>
+          <MessageCircle />
+          <p className={pClasses}>Experimento</p>                  
         </Link>
 
         {divider()}
