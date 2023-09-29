@@ -206,6 +206,87 @@ export async function updateEmbeddings() {
 
 }
 
+export async function updateEmbedding(propertyId: string) {
+  const embeddings = new OpenAIEmbeddings({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    verbose: true,
+  })
+
+  // iterar sobre las primeras 5 propiedades
+  const properties: PropertyDataToEmbed[] = await prisma.$queryRaw`SELECT 
+  id,
+  "idPropiedad",
+  tipo, 
+  "enVenta", 
+  "enAlquiler", 
+  alquilada, 
+  zona, 
+  ciudad,  
+  departamento,
+  dormitorios,
+  banios,
+  garages,
+  parrilleros,
+  piscinas,
+  calefaccion,
+  "monedaVenta",
+  "precioVenta",
+  "monedaAlquiler",
+  "precioAlquiler",
+  "monedaGastosComunes",
+  "gastosComunes",
+  titulo,
+  descripcion
+  FROM "Property"
+  WHERE id=${propertyId}`;
+
+  for (const property of properties) {
+    let textToEmbed= property.tipo
+    if (property.enVenta === 'si' && property.enAlquiler === 'si')
+      textToEmbed += ' en venta y alquiler'
+    else if (property.enVenta === 'si')
+      textToEmbed += ' en venta'
+    else if (property.enAlquiler === 'si')
+      textToEmbed += ' en alquiler'
+    property.zona !== null && property.zona !== "" && (textToEmbed += ` en ${property.zona},`)
+    property.ciudad !== null && property.ciudad !== "" && (textToEmbed += ` en ${property.ciudad},`)
+    property.departamento !== null && property.departamento !== "" && (textToEmbed += ` en ${property.departamento},`)    
+    property.dormitorios !== null && property.dormitorios !== "" && (textToEmbed += ` con ${property.dormitorios} dormitorios,`)
+    property.banios !== null && property.banios !== "" && (textToEmbed += ` con ${property.banios} baños,`)
+    property.garages !== null && property.garages !== "" && (textToEmbed += ` con ${property.garages} garages,`)
+    property.parrilleros !== null && property.parrilleros !== "" && (textToEmbed += ` con ${property.parrilleros} parrilleros,`)
+    property.piscinas !== null && property.piscinas !== "" && (textToEmbed += ` con ${property.piscinas} piscinas,`)
+    property.calefaccion !== null && property.calefaccion !== "" && (textToEmbed += ` con calefacción,`)
+    property.monedaVenta !== null && property.monedaVenta !== "" && property.precioVenta !== "" && (textToEmbed += ` con precio de venta ${property.precioVenta} ${property.monedaVenta},`)
+    property.monedaAlquiler !== null && property.monedaAlquiler !== "" && property.precioAlquiler !== "" && (textToEmbed += ` con precio de alquiler ${property.precioAlquiler} ${property.monedaAlquiler},`)
+    property.monedaGastosComunes !== null && property.monedaGastosComunes !== "" && property.gastosComunes !== "" && (textToEmbed += ` con gastos comunes de ${property.gastosComunes} ${property.monedaGastosComunes}.`)
+    property.titulo !== null && property.titulo !== "" && (textToEmbed += `. ${property.titulo}.`)
+    property.descripcion !== null && property.descripcion !== "" && (textToEmbed += `. ${property.descripcion}.`)
+
+    if (!textToEmbed) {
+      console.log(`No text to embed for property ${property.idPropiedad}`)
+      continue
+    }
+    const id= property.id
+    // remove field id from content object
+    delete property.id
+    // remove all fields that are empty strings
+    const keys= Object.keys(property)
+    for (const key of keys) {
+      if (property[key as keyof PropertyDataToEmbed] === '') {
+        delete property[key as keyof PropertyDataToEmbed]
+      }
+    }
+
+
+    const vector= await embeddings.embedQuery(textToEmbed)
+    const embedding = pgvector.toSql(vector)
+    await prisma.$executeRaw`UPDATE "Property" SET embedding = ${embedding}::vector, content = ${textToEmbed} WHERE id = ${id}`
+    console.log(`Text embeded: ${textToEmbed}`)    
+  }  
+
+}
+
 export type SimilaritySearchResult = {
   idPropiedad: string
   url: string

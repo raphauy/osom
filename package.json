@@ -9,7 +9,8 @@
     "lint": "next lint",
     "importar": "tsx src/services/properties-script.ts",
     "xlsx": "tsx src/services/properties-xlsx-script.ts",
-    "main": "tsx src/services/main.ts"
+    "main": "tsx src/services/main.ts",
+    "test-update": "tsx src/services/propertyUpdateService.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.1",
