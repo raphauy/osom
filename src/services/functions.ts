@@ -3,13 +3,13 @@ export const functions= [
   {
     name: "getProperties",
     description:
-      "Devuelve propiedades inmobiliarias a partir de una descripción de la propiedad. Ejemplo: 'Casa en venta de dos dormitorios en Pocitos'",
+      "Devuelve propiedades inmobiliarias a partir de una descripción de las características de la propiedad. Ejemplo: 'Casa en venta en Montevideo con dos dormitorios con valor aproximado de 200000 USD'",
     parameters: {
       type: "object",
       properties: {
         description: {
           type: "string",
-          description: "La descripción de la propiedad, puede incluir, tipo como casa o apartamento, zona como su barrio, departamento o ciudad, cantidad de dormitorios, si tiene piscina, si tiene parrillero, etc.",
+          description: "La descripción contiene las características de la propiedad. Las características, deben incluir: tipo (casa, apartamento, terreno, local, etc), operación (alquilar o venta), valor aproximado (para venta o alquiler según corresponda) y zona (barrio, departamento o ciudad). Opcionalmente se puede incluir cualquier otra característica como cantidad de dormitorios, si tiene piscina, si tiene parrillero, etc.",
         },
       },
       required: ["description"],

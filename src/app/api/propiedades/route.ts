@@ -42,7 +42,7 @@ export async function POST(request: Request) {
             transformedResults.push(transformedItem)
         })            
 
-        console.log(transformedResults)        
+        //console.log(transformedResults)        
 
         return NextResponse.json({ data: transformedResults }, { status: 200 })
 

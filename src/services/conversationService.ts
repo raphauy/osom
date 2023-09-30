@@ -168,7 +168,6 @@ export async function processMessage(id: string) {
 				content: JSON.stringify(content),
 			})
       notificarAgente = true
-      //assistantResponse = "El usuario solicitó hablar con un asesor inmobiliario."
 		}
 
     // second invocation of ChatGPT to respond to the function call
@@ -199,7 +198,7 @@ export async function processMessage(id: string) {
 }
 
 function getGPTMessages(messages: ChatCompletionMessageParam[]) {
-  const gptMessages: ChatCompletionMessageParam[]= [getSystemMessage()]
+  const gptMessages: ChatCompletionMessageParam[]= [getSystemMessageV2()]
   for (const message of messages) {
     gptMessages.push({
       role: message.role,
@@ -220,6 +219,24 @@ export function getSystemMessage() {
     Es muy importante que la zona o ciudad o departamente de las respuestas coincidan con la intención del usuario.
     Si el usuario pide algo en Punta del Este, no le puedes responder con propiedades en Montevideo.
     Pocitos es un barrio de Montevideo.
+    Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.
+    Las respuestas que contengan propiedades deben poner el título en negrita con un solo asterisco (ejemplo: texto en *negrita*) seguido de la url pelada (no usar el formato markdown para links).)`,
+  }
+  return systemMessage
+  
+}
+
+export function getSystemMessageV2() {
+  const systemMessage: ChatCompletionMessageParam= {
+    role: "system",
+    content: `Eres un asistente inmobiliario,
+    tu objetivo es indentificar la intención del usuario y responderle con la información que necesita.    
+    Debes preguntarle al usuario por las características de la propiedad que está buscando y luego utilizar la función 'getProperties' para obtener las propiedades sugeridas para esas características.
+    Características principales: tipo (casa, apartamento, terreno, local, etc), operación (alquilar o venta), valor aproximado (para venta o alquiler según corresponda) y zona (barrio, departamento o ciudad)
+    Características opcionales: dormitorios,  banios,  garages, parrilleros, piscinas, calefaccion, amueblada, seguridad, asensor, lavadero, gastosComunes, etc.
+    Luego de obtener las propiedades sugeridas debes utilizar las que coincidan con las características proporcionadas por el usuario.
+    Solo debes utilizar la información de las propiedades, no debes inventar nada.
+    Es muy importante que la zona (barrio, departamento o ciudad) de las respuestas coincidan con la zona proporcionada por el usuario.    
     Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.
     Las respuestas que contengan propiedades deben poner el título en negrita con un solo asterisco (ejemplo: texto en *negrita*) seguido de la url pelada (no usar el formato markdown para links).)`,
   }
