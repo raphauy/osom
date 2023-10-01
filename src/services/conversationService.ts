@@ -125,8 +125,8 @@ export async function processMessage(id: string) {
 
   // check if the conversation requires a function call to be made
   const initialResponse = await openai.chat.completions.create({
-    model: "gpt-3.5-turbo-0613",
-    //model: "gpt-4-0613",
+    //model: "gpt-3.5-turbo-0613",
+    model: "gpt-4-0613",
     messages: messages,
     temperature: 0,
     functions,
@@ -149,8 +149,11 @@ export async function processMessage(id: string) {
 		if(initialResponse.choices[0].message.function_call.name == "getProperties"){
 			let argumentObj = JSON.parse(initialResponse.choices[0].message.function_call.arguments)      
       const description= argumentObj.description
-      console.log('description: ', description)      
-			content = await getProperties(description, conversation.clientId)
+      const tipo= argumentObj.tipo
+      const operacion= argumentObj.operacion
+      const presupuesto= argumentObj.presupuesto
+      const zona= argumentObj.zona
+			content = await getProperties(tipo, operacion, presupuesto, zona, description, conversation.clientId)
 			messages.push(initialResponse.choices[0].message)
 			messages.push({
 				role: "function",
@@ -172,7 +175,8 @@ export async function processMessage(id: string) {
 
     // second invocation of ChatGPT to respond to the function call
     let step4response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo-0613",
+      //model: "gpt-3.5-turbo-0613",
+      model: "gpt-4-0613",
       messages,
     });
     assistantResponse = step4response.choices[0].message.content
@@ -231,12 +235,13 @@ export function getSystemMessageV2() {
     role: "system",
     content: `Eres un asistente inmobiliario,
     tu objetivo es indentificar la intención del usuario y responderle con la información que necesita.    
-    Debes preguntarle al usuario por las características de la propiedad que está buscando y luego utilizar la función 'getProperties' para obtener las propiedades sugeridas para esas características.
-    Características principales: tipo (casa, apartamento, terreno, local, etc), operación (alquilar o venta), valor aproximado (para venta o alquiler según corresponda) y zona (barrio, departamento o ciudad)
+    Debes preguntarle al usuario por las características de la propiedad que está buscando hasta obtener al menos las características obligatorias (tipo, operación, presupuesto y zona) y luego utilizar la función 'getProperties' para obtener las propiedades sugeridas para esas características.
+    Características obligatorias: tipo (casa, apartamento, terreno, local, etc), operación (alquilar o venta), presupuesto (presupuesto aproximado para venta o alquiler según corresponda) y zona (barrio, departamento o ciudad)
     Características opcionales: dormitorios,  banios,  garages, parrilleros, piscinas, calefaccion, amueblada, seguridad, asensor, lavadero, gastosComunes, etc.
+    Asegúrate de obtener el presupuesto aproximado para venta o alquiler según corresponda para incluir en las características.
     Luego de obtener las propiedades sugeridas debes utilizar las que coincidan con las características proporcionadas por el usuario.
     Solo debes utilizar la información de las propiedades, no debes inventar nada.
-    Es muy importante que la zona (barrio, departamento o ciudad) de las respuestas coincidan con la zona proporcionada por el usuario.    
+    Es muy importante que la zona (barrio, departamento o ciudad) de las respuestas coincidan con la zona proporcionada por el usuario.
     Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.
     Las respuestas que contengan propiedades deben poner el título en negrita con un solo asterisco (ejemplo: texto en *negrita*) seguido de la url pelada (no usar el formato markdown para links).)`,
   }
