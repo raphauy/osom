@@ -15,7 +15,8 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
 
   if (!osomEndpoint) throw new Error("whatsappEndpoint not found")
 
-  let text= quitarCorchetes(body)
+  let text= quitarUrlEntreParentesisRectos(body)
+  text= quitarCorchetes(text)
   text= quitarParentesis(text)
 
   const headers = {
@@ -58,6 +59,22 @@ export function transformText(text: string): string {
   return transformedText
 }
 
+// función que elimina el texto que tenga una url dentro de paréntesis rectos, ejemplo, 
+// este texto: '[https://www.google.com]' lo transforma en este texto ''. Importante: solo eliminar el texto que tenga una url dentro de paréntesis rectos, es decir que comience con http
+export function quitarUrlEntreParentesisRectos(text: string): string {
+  const regex= /\[([^\]]+)\]/g
+  const matches= text.matchAll(regex)
+  let transformedText= text
+  for (const match of matches as any) {
+    const original= match[0]
+    const url= match[1]
+    if (url.startsWith("http")) {
+      transformedText= transformedText.replace(original, "")
+    }
+  }
+  return transformedText
+}
+
 // función que quita los paréntesis curvos, ejemplo: este texto (tiene parentesis) y lo transforma en este texto tiene parentesis
 export function quitarParentesis(text: string): string {
   const regex= /\(([^\)]+)\)/g
@@ -86,8 +103,10 @@ export function quitarCorchetes(text: string): string {
 
 // función test para quitarParentesis
 export function start() {
-  const text= "Hola [texto en negrita](https://www.google.com) [texto en negrita](https://www.google.com)"
-  const text2= quitarCorchetes(text)
-  const transformedText= quitarParentesis(text2)
+  const text= "*Apartamento en Pocitos* con 1 dormitorio, 1 baño y calefacción. El precio del alquiler es de 22000 UYU. Puedes ver más detalles de la propiedad aquí: [https://hus.uy/propiedad/417](https://hus.uy/propiedad/417)"  
+  let transformedText= quitarUrlEntreParentesisRectos(text)
+  console.log(transformedText)
+  transformedText= quitarCorchetes(transformedText)
+  transformedText= quitarParentesis(transformedText)
   console.log(transformedText)
 }
