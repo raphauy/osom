@@ -2,7 +2,7 @@ import { OpenAI } from "openai"
 import { OpenAIStream, StreamingTextResponse } from "ai"
 import { functions, runFunction } from "../../../services/functions"
 import { NextResponse } from "next/server";
-import { getSystemMessage, getSystemMessageForSocialExperiment } from "@/services/conversationService";
+import { getSystemMessage, getSystemMessageForSocialExperiment, getSystemMessageV2 } from "@/services/conversationService";
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   if (reqUrl?.endsWith("experimento")) {
     messages.unshift(getSystemMessageForSocialExperiment())
   } else {
-    messages.unshift(getSystemMessage())
+    messages.unshift(getSystemMessageV2())
   }
   
 
