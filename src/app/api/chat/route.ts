@@ -13,8 +13,9 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
 
-  const { messages } = await req.json()
+  const { messages, clientId } = await req.json()
   console.log(messages)
+  console.log("clientId:" + clientId)
 
   const reqUrl= req.headers.get("referer");
   console.log("reqUrl: " + reqUrl);
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
     function_call: "auto",
   })
 
-  const clientId = "clm865amy0009jepxozqh2ff9"
+  //const clientId = "clm865amy0009jepxozqh2ff9"
 
   const stream = OpenAIStream(initialResponse, {
     experimental_onFunctionCall: async (

@@ -64,7 +64,7 @@ export default function SideBar() {
           <p className={pClasses}>Pruebas</p>                  
         </Link>
 
-        <Link href="/admin/chat" className={chat}>
+        <Link href="/admin/chat?clientId=clm865amy0009jepxozqh2ff9" className={chat}>
           <MessageCircle />
           <p className={pClasses}>Chat</p>                  
         </Link>

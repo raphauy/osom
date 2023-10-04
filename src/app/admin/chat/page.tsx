@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import clsx from "clsx";
 import { Bot, Loader, RefreshCcw, SendIcon, User } from "lucide-react";
@@ -8,7 +8,12 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import LoadingSpinner, { LoadingSpinnerChico } from "@/components/loadingSpinner";
 import Textarea from "react-textarea-autosize";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ClientSelector, SelectorData } from "./client-selector";
+import getClients from "@/services/clientService";
+import { getDataClients } from "../clients/(crud)/actions";
+import { set } from "date-fns";
+import { useSession } from "next-auth/react";
 
 const examples = [
   "Busco casa para la venta en La Tahona, preferentemente con piscina",
@@ -21,12 +26,50 @@ export default function Chat() {
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, input, setInput, handleSubmit, isLoading } = useChat({});
+  const [clientId, setClientId] = useState("clm865amy0009jepxozqh2ff9")
+  const [clientName, setClientName] = useState("Hus")
+  const [clients, setClients] = useState<SelectorData[]>([])
+  const [userEmail, setUserEmail] = useState("")
+  const session= useSession()
+
+  const { messages, setMessages, input, setInput, handleSubmit, isLoading } = useChat({
+    body: {
+      clientId,
+    },
+  })
+
+  const searchParams= useSearchParams()
+
+  useEffect(() => {
+    const clientId= searchParams.get('clientId')
+    if (clientId) {
+      setClientId(clientId)
+      // empty messages
+      setMessages([])    
+    }
+  }, [searchParams, setMessages])
+
+  useEffect(() => {
+    getDataClients().then((data) => {      
+      setClients(data.map((client) => ({ slug: client.id, name: client.nombre })))
+      const cliName= data.find((client) => client.id === clientId)?.nombre
+      cliName && setClientName(cliName)
+    })
+    session.data?.user.email && setUserEmail(session.data.user.email)
+
+  }, [clientId, session.data?.user.email])
+
 
   const disabled = isLoading || input.length === 0;
 
   return (
     <main className="flex flex-col items-center justify-between w-full pb-40">
+      <div className="min-w-[200px]">
+        {
+          userEmail === "rapha.uy@rapha.uy" && 
+            (<ClientSelector selectors={clients} />)
+        }
+      </div>
       {messages.length > 0 ? (
         messages.map((message, i) => (
           <div
@@ -68,7 +111,7 @@ export default function Chat() {
         <div className="max-w-screen-md mx-5 mt-20 border rounded-md border-gray-200sm:mx-0 sm:w-full">
           <div className="flex flex-col space-y-4 p-7 sm:p-10">
             <h1 className="text-lg font-semibold text-black">
-              Bienvenido a inmobiliaria Hus!
+              Bienvenido a inmobiliaria {clientName}!
             </h1>
             <p className="text-gray-500">
               Soy tu asistente inmobiliario, puedes preguntarme sobre casas o
