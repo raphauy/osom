@@ -1,11 +1,13 @@
 "use server"
 
-import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug } from "@/services/clientService";
+import getClients, { createClient, deleteClient, editClient, getClient, getClientBySlug, setPrompt, setWhatsAppEndpoing } from "@/services/clientService";
 import { Client } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { ClientFormValues } from "./clientForm";
 import { getUser } from "@/services/userService";
 import { getPercentages, getPropertiesCount } from "@/services/propertyService";
+import { EndpointFormValues } from "../../config/(crud)/endpoint-form";
+import { PromptFormValues } from "../../prompts/prompt-form";
 
 export type DataClient = {
     id: string
@@ -17,6 +19,7 @@ export type DataClient = {
     rentPercentage?: string
     salePercentage?: string
     whatsAppEndpoint: string | null
+    prompt?: string | null
   }
     
 
@@ -33,7 +36,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         descripcion: client.description || '',
         url: client.url || '',
         cantPropiedades: propertiesCount,
-        whatsAppEndpoint: client.whatsappEndpoint
+        whatsAppEndpoint: client.whatsappEndpoint,
+        prompt: client.prompt
     }
     return data
 }
@@ -54,7 +58,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         descripcion: client.description || '',
         url: client.url || '',
         cantPropiedades: propertiesCount,
-        whatsAppEndpoint: client.whatsappEndpoint
+        whatsAppEndpoint: client.whatsappEndpoint,
+        prompt: client.prompt
     }
     return data
 }
@@ -73,7 +78,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         descripcion: client.description || '',
         url: client.url || '',
         cantPropiedades: propertiesCount,
-        whatsAppEndpoint: client.whatsappEndpoint
+        whatsAppEndpoint: client.whatsappEndpoint,
+        prompt: client.prompt
     }
     return data
 }
@@ -100,7 +106,8 @@ export async function getDataClients() {
                 cantPropiedades: propertiesCount,
                 rentPercentage: percentages?.rents,
                 salePercentage: percentages?.sales,
-                whatsAppEndpoint: client.whatsappEndpoint
+                whatsAppEndpoint: client.whatsappEndpoint,
+                prompt: client.prompt
             };
         })
     );
@@ -135,3 +142,22 @@ export async function eliminate(clientId: string): Promise<Client | null> {
     return deleted
 }
 
+export async function updateEndpoint(json: EndpointFormValues) {
+
+    if (!json.whatsappEndpoint || !json.clienteId)
+        return
+
+    setWhatsAppEndpoing(json.whatsappEndpoint, json.clienteId)
+
+    revalidatePath(`/admin/config`)
+}
+
+export async function updatePrompt(json: PromptFormValues) {
+
+    if (!json.prompt || !json.clienteId)
+        return
+
+    setPrompt(json.prompt, json.clienteId)
+
+    revalidatePath(`/admin/prompts`)
+}

@@ -104,7 +104,7 @@ export default function Chat() {
               >
                 {message.content}
               </ReactMarkdown>
-            </div>
+            </div>            
           </div>
         ))
       ) : (

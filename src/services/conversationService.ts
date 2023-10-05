@@ -4,6 +4,7 @@ import { OpenAI } from "openai"
 import { functions, getProperties, notifyHuman, runFunction } from "./functions";
 import { ChatCompletionMessageParam } from "openai/resources/chat/index.mjs";
 import { sendWapMessage } from "./osomService";
+import { getClient } from "./clientService";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -41,16 +42,21 @@ export async function getConversationsOfClient(clientId: string) {
   return found;
 }
 
-// an active conversation is one that was updated in the last 10 minutes
+
+// an active conversation is one that has a message in the last 10 minutes
 export async function getActiveConversation(phone: string, clientId: string) {
-  
+    
     const found = await prisma.conversation.findFirst({
       where: {
         phone,
         clientId,        
-        updatedAt: {
-          gte: new Date(Date.now() - 10 * 60 * 1000)
-        }        
+        messages: {
+          some: {
+            createdAt: {
+              gte: new Date(Date.now() - 10 * 60 * 1000)
+            }
+          }
+        }
       },
       orderBy: {
         createdAt: 'desc',
@@ -62,7 +68,6 @@ export async function getActiveConversation(phone: string, clientId: string) {
   
     return found;
 }
-
 
 export async function getConversation(id: string) {
 
@@ -84,11 +89,11 @@ export async function getConversation(id: string) {
 }
 
 // find an active conversation or create a new one to connect the messages
-export async function messageArrived(phone: string, text: string, clientId: string, role: string) {
+export async function messageArrived(phone: string, text: string, clientId: string, role: string, gptData: string) {
 
   const activeConversation= await getActiveConversation(phone, clientId)
   if (activeConversation) {
-    const message= await createMessage(activeConversation.id, role, text)
+    const message= await createMessage(activeConversation.id, role, text, gptData)
     return message    
   } else {
     const created= await prisma.conversation.create({
@@ -97,11 +102,16 @@ export async function messageArrived(phone: string, text: string, clientId: stri
         clientId,
       }
     })
-    const message= await createMessage(created.id, role, text)
+    const message= await createMessage(created.id, role, text, gptData)
     return message   
   }
 }
 
+export interface gptPropertyData {
+  titulo: string
+  url: string
+  distance: number
+}
 
 export async function processMessage(id: string) {
   const message= await prisma.message.findUnique({
@@ -112,6 +122,7 @@ export async function processMessage(id: string) {
       conversation: {
         include: {
           messages: true,
+          client: true
         }
       }
     }
@@ -119,7 +130,10 @@ export async function processMessage(id: string) {
   if (!message) throw new Error("Message not found")
 
   const conversation= message.conversation
-  const messages= getGPTMessages(conversation.messages as ChatCompletionMessageParam[])
+  
+  //const messages= getGPTMessages(conversation.messages as ChatCompletionMessageParam[])
+  if (!conversation.client.prompt) throw new Error("Client not found")
+  const messages= getGPTMessages(conversation.messages as ChatCompletionMessageParam[], conversation.client.prompt)
 
   console.log("gptMessages: ", messages)
 
@@ -141,6 +155,7 @@ export async function processMessage(id: string) {
   let assistantResponse: string | null = ""
 	let content = ""
   let notificarAgente = false
+  let gptDataArray: gptPropertyData[] = []
 	// Step 2: Check if ChatGPT wants to use a function
 	if(wantsToUseFunction){
 		// Step 3: Use ChatGPT arguments to call your function
@@ -154,6 +169,32 @@ export async function processMessage(id: string) {
       const presupuesto= argumentObj.presupuesto
       const zona= argumentObj.zona
 			content = await getProperties(tipo, operacion, presupuesto, zona, description, conversation.clientId)
+
+      // @ts-ignore
+      gptDataArray= content.data.map((item) => {
+        return {
+          titulo: item.titulo,
+          url: item.url,
+          distance: parseFloat(item.distance).toFixed(3)
+        }
+      })
+
+      gptDataArray.forEach((item, index) => {
+        console.log(`Título: ${item.titulo}`)
+        console.log(`URL: ${item.url}`)
+        console.log(`Distancia: ${item.distance}`)
+      })
+      
+      const similarityThreshold= process.env.SIMILARITY_THRESHOLD ? parseFloat(process.env.SIMILARITY_THRESHOLD) : 0.5
+      // @ts-ignore
+      content.data= content.data.filter((item) => {
+        return item.distance < similarityThreshold
+      })
+
+      // @ts-ignore
+      console.log("properties count: ", content.data.length)
+      
+
 			messages.push(initialResponse.choices[0].message)
 			messages.push({
 				role: "function",
@@ -188,7 +229,8 @@ export async function processMessage(id: string) {
   console.log("assistantResponse: ", assistantResponse)  
 
   if (assistantResponse) {
-    await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant")
+    const gptDataString= JSON.stringify(gptDataArray)
+    await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString)
     console.log("message stored")
   }
 
@@ -201,8 +243,11 @@ export async function processMessage(id: string) {
   
 }
 
-function getGPTMessages(messages: ChatCompletionMessageParam[]) {
-  const gptMessages: ChatCompletionMessageParam[]= [getSystemMessageV2()]
+function getGPTMessages(messages: ChatCompletionMessageParam[], clientPrompt: string) {
+
+  const systemPrompt= getSystemMessage(clientPrompt)
+
+  const gptMessages: ChatCompletionMessageParam[]= [systemPrompt]
   for (const message of messages) {
     gptMessages.push({
       role: message.role,
@@ -212,43 +257,23 @@ function getGPTMessages(messages: ChatCompletionMessageParam[]) {
   return gptMessages
 }
 
-export function getSystemMessage() {
+
+export function getSystemMessage(prompt: string) {
+  const tecnicalContent= `
+  - Cuando obtentas del usuario el tipo, operación, presupuesto y zona, creas una descripción de la propiedad con las características y utilizas la función 'getProperties'.
+  - Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.  
+  `
+  const content= prompt + "\n" + tecnicalContent
+  console.log("systemPrompt: ", content)  
+
   const systemMessage: ChatCompletionMessageParam= {
     role: "system",
-    content: `Eres un asistente inmobiliario,
-    tu objetivo es indentificar la intención del usuario y responderle con la información que necesita.
-    Si hace falta alguna información clave para buscar una propiedad como la ubicación, el precio o el tipo de propiedad, puedes preguntarle al usuario por esa información.
-    Debes filtrar la información de propiedades que no coincidan con la intención del usuario.
-    Solo debes contestar con información de las propiedades, no debes inventar nada.
-    Es muy importante que la zona o ciudad o departamente de las respuestas coincidan con la intención del usuario.
-    Si el usuario pide algo en Punta del Este, no le puedes responder con propiedades en Montevideo.
-    Pocitos es un barrio de Montevideo.
-    Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.
-    Las respuestas que contengan propiedades deben poner el título en negrita con un solo asterisco (ejemplo: texto en *negrita*) seguido de la url pelada (no usar el formato markdown para links).)`,
+    content
   }
   return systemMessage
   
 }
 
-export function getSystemMessageV2() {
-  const systemMessage: ChatCompletionMessageParam= {
-    role: "system",
-    content: `Eres un asistente inmobiliario,
-    tu objetivo es indentificar la intención del usuario y responderle con la información que necesita.    
-    Debes preguntarle al usuario por las características de la propiedad que está buscando hasta obtener al menos las características obligatorias (tipo, operación, presupuesto y zona) y luego utilizar la función 'getProperties' para obtener las propiedades sugeridas para esas características.
-    Características obligatorias: tipo (casa, apartamento, terreno, local, etc), operación (alquilar o venta), presupuesto (presupuesto aproximado para venta o alquiler según corresponda) y zona (barrio, departamento o ciudad)
-    Características opcionales: dormitorios,  banios,  garages, parrilleros, piscinas, calefaccion, amueblada, seguridad, asensor, lavadero, gastosComunes, etc.
-    Asegúrate de obtener el presupuesto aproximado para venta o alquiler según corresponda para incluir en las características.
-    Luego de obtener las propiedades sugeridas debes utilizar las que coincidan con las características proporcionadas por el usuario.
-    Solo debes utilizar la información de las propiedades, no debes inventar nada.
-    Descartar las propiedades que tengan una diferencia mayor a 100000 USD con el presupuesto ingresado por el usuario. Si no hay alguna propiedad cercana al presupuesto solicitado se debe contestar: "No pude encontrar algo cercano a tu presupuesto".
-    Es muy importante que la zona (barrio, departamento o ciudad) de las respuestas coincidan con la zona proporcionada por el usuario.
-    Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.
-    Las respuestas que contengan propiedades deben poner el título en negrita con un solo asterisco (ejemplo: texto en *negrita*) seguido de la url pelada (no usar el formato markdown para links).)`,
-  }
-  return systemMessage
-  
-}
 
 export function getSystemMessageForSocialExperiment() {
   const systemMessage: ChatCompletionMessageParam= {
@@ -268,11 +293,12 @@ export function getSystemMessageForSocialExperiment() {
   
 }
 
-function createMessage(conversationId: string, role: string, content: string) {
+function createMessage(conversationId: string, role: string, content: string, gptData?: string) {
   const created= prisma.message.create({
     data: {
       role,
       content,
+      gptData,
       conversationId,
     }
   })

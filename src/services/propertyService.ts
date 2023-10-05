@@ -294,18 +294,27 @@ export type SimilaritySearchResult = {
   content: string
   distance: number
 }
-export async function similaritySearch(clientId: string, searchInput: string, limit: number = 10) : Promise<SimilaritySearchResult[]> {
+export async function similaritySearch(clientId: string, tipo: string, operacion: string, searchInput: string, limit: number = 10) : Promise<SimilaritySearchResult[]> {
   const embeddings = new OpenAIEmbeddings({
     openAIApiKey: process.env.OPENAI_API_KEY,
     verbose: true,
   })
 
+  const tipoConMayuscula= tipo.charAt(0).toUpperCase() + tipo.slice(1)
+
   const vector= await embeddings.embedQuery(searchInput)
   const embedding = pgvector.toSql(vector)
 
-  const result: SimilaritySearchResult[] = 
-  await prisma.$queryRaw`SELECT "idPropiedad", "url" titulo, content, embedding <-> ${embedding}::vector as distance FROM "Property" WHERE "clientId" = ${clientId} ORDER BY distance LIMIT ${limit}`
-  
+  let result: SimilaritySearchResult[]= []
+  if (operacion === "venta" || operacion === "vender" || operacion === "compra" || operacion === "comprar")
+    result = await prisma.$queryRaw`SELECT "idPropiedad", "url", titulo, content, embedding <-> ${embedding}::vector as distance FROM "Property" WHERE "clientId" = ${clientId} AND "tipo" = ${tipoConMayuscula} AND "enVenta" = 'si' ORDER BY distance LIMIT ${limit}`
+  else if (operacion === "alquiler" || operacion === "alquilar" || operacion === "renta" || operacion === "rentar")
+    result = await prisma.$queryRaw`SELECT "idPropiedad", "url", titulo, content, embedding <-> ${embedding}::vector as distance FROM "Property" WHERE "clientId" = ${clientId} AND "tipo" = ${tipoConMayuscula} AND "enAlquiler" = 'si' ORDER BY distance LIMIT ${limit}`
+
+  result.map((item) => {
+    console.log(`${item.titulo}: ${item.distance}`)    
+  })
+
   return result
 }
 
@@ -314,8 +323,8 @@ type ContextItem = {
   infoPropiedad: string
 }
 
-export async function promptChatGPT(clientId: string, llmModel: string, promptTemplate: string, userInput: string, limit: number) {
-  const similarityArray= await similaritySearch(clientId, userInput, limit)
+export async function promptChatGPT(clientId: string, tipo: string, operacion: string, llmModel: string, promptTemplate: string, userInput: string, limit: number) {
+  const similarityArray= await similaritySearch(clientId, tipo, operacion, userInput, limit)
   const context: ContextItem[]= similarityArray.map((item) => {
     return {
       idPropiedad: item.idPropiedad,

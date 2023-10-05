@@ -1,8 +1,8 @@
-import { OpenAI } from "openai"
-import { OpenAIStream, StreamingTextResponse } from "ai"
-import { functions, runFunction } from "../../../services/functions"
-import { NextResponse } from "next/server";
-import { getSystemMessage, getSystemMessageForSocialExperiment, getSystemMessageV2 } from "@/services/conversationService";
+import { getSystemMessage, getSystemMessageForSocialExperiment } from "@/services/conversationService";
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import { OpenAI } from "openai";
+import { functions, runFunction } from "../../../services/functions";
+import { getClient } from "@/services/clientService";
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
@@ -17,13 +17,21 @@ export async function POST(req: Request) {
   console.log(messages)
   console.log("clientId:" + clientId)
 
+  const client= await getClient(clientId)
+  if (!client) {
+    return new Response("Client not found", { status: 404 })
+  }
+  if (!client.prompt) {
+    return new Response("Client prompt not found", { status: 404 })
+  }
+
   const reqUrl= req.headers.get("referer");
   console.log("reqUrl: " + reqUrl);
 
   if (reqUrl?.endsWith("experimento")) {
     messages.unshift(getSystemMessageForSocialExperiment())
   } else {
-    messages.unshift(getSystemMessageV2())
+    messages.unshift(getSystemMessage(client.prompt))
   }
   
 

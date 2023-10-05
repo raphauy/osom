@@ -49,6 +49,8 @@ export async function getProperties(tipo: string, operacion: string, presupuesto
   const requestData = {
     apiToken: process.env.API_TOKEN,
     clientId,
+    tipo,
+    operacion,
     limit: '5',
     input: description
   }

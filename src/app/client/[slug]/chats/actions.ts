@@ -12,6 +12,7 @@ export type DataMessage = {
     updatedAt: Date
     role: string
     content: string
+    gptData: string | null
 }
 
 export type DataConversation = {
@@ -46,7 +47,8 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
             fecha: getFormat(utcToZonedTime(message.createdAt, 'America/Montevideo')),
             updatedAt: message.updatedAt,
             role: message.role,
-            content: message.content
+            content: message.content,
+            gptData: message.gptData
         })),
         clienteNombre: conversation.client.name,
         clienteSlug: conversation.client.slug,

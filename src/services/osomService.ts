@@ -19,6 +19,11 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
   text= quitarCorchetes(text)
   text= quitarParentesis(text)
 
+  // if (process.env.NODE_ENV === 'development') {
+  //   console.log("sendWapMessage: ", text)
+  //   return
+  // }
+
   const headers = {
     'Content-Type': 'application/json',
   }

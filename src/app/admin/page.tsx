@@ -51,13 +51,9 @@ export default async function AdminPage() {
               <CardContent>
                 <div className="text-2xl font-bold">{clients.length}</div>
                 <div className="flex justify-between">
-                  {
-                    dataClients.map(client => (
-                      <p key={client.id} className="text-xs text-muted-foreground">
-                        {client.nombre} ({client.cantPropiedades} prop)
-                      </p>
-                    ))
-                  }
+                  <p className="text-xs text-muted-foreground">
+                    {dataClients.reduce((acc, client) => acc + client.cantPropiedades, 0)} propiedades
+                  </p>                  
                 </div>
               </CardContent>
             </Card>

@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 type Propiedad= {
     url: string
     titulo: string
-    características: string
+    caracteristicas: string
 }
 
 export async function POST(request: Request) {
@@ -19,6 +19,10 @@ export async function POST(request: Request) {
         if (apiToken !== process.env.API_TOKEN) return NextResponse.json({ error: "Bad apiToken" }, { status: 400 })
 
         const limit = json.limit ? Number(json.limit) : 10
+        const tipo = json.tipo
+        const operacion= json.operacion
+        console.log("tipo: ", tipo)
+        console.log("operacion: ", operacion)        
 
         const clientId = json.clientId
         if (!clientId) {
@@ -31,13 +35,14 @@ export async function POST(request: Request) {
 
         console.log("input: ", input)        
         
-        const similarityArray= await similaritySearch(clientId, input, limit)
+        const similarityArray= await similaritySearch(clientId, tipo, operacion, input, limit)
         const transformedResults: Propiedad[]= []
         similarityArray.forEach((item) => {
             const transformedItem= {
                 url: item.url,
                 titulo: item.titulo,
-                características: item.content
+                caracteristicas: item.content,
+                distance: item.distance
             }
             transformedResults.push(transformedItem)
         })            

@@ -105,3 +105,18 @@ export async function setWhatsAppEndpoing(whatsappEndpoint: string, clientId: st
 
   
 }
+
+export async function setPrompt(prompt: string, clientId: string) {
+  const client= await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      prompt
+    }
+  })
+
+  return client  
+
+  
+}

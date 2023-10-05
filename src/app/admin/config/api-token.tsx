@@ -3,11 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { toast } from "@/components/ui/use-toast"
 import useCopyToClipboard from "@/lib/useCopyToClipboard"
-import { Copy, Edit } from "lucide-react"
-import { useEffect, useState } from "react"
-import { EndpointDialog } from "./(crud)/endpoint-dialog"
-import { update } from "./(crud)/actions"
-import { getDataClient } from "../clients/(crud)/actions"
+import { Copy } from "lucide-react"
+import { useState } from "react"
 
 interface Props {
     apiToken: string

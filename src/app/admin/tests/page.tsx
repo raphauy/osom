@@ -23,7 +23,14 @@ export default async function TestPage({ searchParams }: Props) {
         try {
             //const results= await similaritySearch(clientId, data.input, 10)
             const limit= data.limit ? Number(data.limit) : 10
-            const results= await promptChatGPT(clientId, data.model, data.prompt, data.input, limit)
+
+
+
+            // ------------- Provisorio ----------------
+            const tipo= "casa"
+            const operacion= "venta"
+
+            const results= await promptChatGPT(clientId, tipo, operacion, data.model, data.prompt, data.input, limit)
     
             return results
         } catch (error) {
