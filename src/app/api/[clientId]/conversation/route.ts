@@ -35,7 +35,7 @@ export async function POST(request: Request, { params }: { params: { clientId: s
         console.log("phone: ", phone)
         console.log("text: ", text)
 
-        const messageStored= await messageArrived(phone, text, clientId, "user")
+        const messageStored= await messageArrived(phone, text, clientId, "user", "")
         console.log("message stored")
         
         processMessage(messageStored.id)
