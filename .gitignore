@@ -1,7 +1,10 @@
+# agregado por RC
 propiedades_hus.xlsx
 *.xls
 *.xlsx
-
+docker-compose.yml
+production.Dockerfile
+production.Dockerfile.bak
 
 # dependencies
 /node_modules

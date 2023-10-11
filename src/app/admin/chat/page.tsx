@@ -64,7 +64,7 @@ export default function Chat() {
 
   return (
     <main className="flex flex-col items-center justify-between w-full pb-40">
-      <div className="min-w-[200px]">
+      <div className="min-w-[270px]">
         {
           userEmail === "rapha.uy@rapha.uy" && 
             (<ClientSelector selectors={clients} />)
