@@ -16,10 +16,10 @@ import { set } from "date-fns";
 import { useSession } from "next-auth/react";
 
 const examples = [
-  "Busco casa para la venta en La Tahona, preferentemente con piscina",
-  "Quisiera alquilar un apartamento de dos dormitorios en Pocitos",
+  "Busco casa para la venta en ...",
+  "Quisiera alquilar una casa en ...",
   "Tienes alguna casa para la venta en Canelones con valor entorno a los 400 mil dólares?",
-  "Busco un apartamento para alquilar en Punta del Este",
+  "Busco un departamento para comprar en Belgrano",
 ];
 
 export default function Chat() {
