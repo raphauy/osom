@@ -193,17 +193,7 @@ export default function Chat() {
             className="transition-colors hover:text-black"
           >            
             Osom Digital
-          </a>{" "}
-          y{" "}
-          <a
-            href="https://rapha.uy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-black"
-          >
-            Raphael Carvalho
           </a>
-          .
         </p>
       </div>
 
