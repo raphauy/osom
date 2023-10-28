@@ -2,6 +2,7 @@ import { ReactNode } from "react"
 import Logo from "./logo"
 import Logged from "./logged"
 import getSession from "@/lib/auth"
+import { ThemeToggle } from "../shadcn/theme-toggle"
 
 interface Props {  
     children: ReactNode
@@ -19,6 +20,9 @@ export default async function Header({ children }: Props) {
                 {session && children}
             </div>
             
+            <div>
+                <ThemeToggle />
+            </div>
             <div>
                 <Logged />
             </div>
