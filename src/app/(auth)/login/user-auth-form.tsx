@@ -22,6 +22,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { LoadingSpinnerChico } from "@/components/loadingSpinner";
+import { Icons } from "@/components/shadcn/icons";
+import { Loader2 } from "lucide-react";
 
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -85,31 +87,64 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="nombre@email.com" {...field} />
-              </FormControl>
-              <FormDescription className="text-center">
-                Ingresa tu email y te enviaremos un link de acceso
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-          <Button disabled={isLoading} className="w-full">
-            {isLoading && (
-              <LoadingSpinnerChico />
+      {/**
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="px-2 bg-background text-muted-foreground">
+            Login con tu cuenta de Google
+          </span>
+        </div>
+      </div>
+      <Button variant="outline" className=" mb-16" type="button" disabled={isLoading} onClick={() => signIn("google")}>
+        {isLoading ? (
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        ) : (
+          <Icons.google2 className="w-4 h-4 mr-2" />
+        )}{" "}
+        <p className="ml-3">Google</p>
+      </Button>
+       */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="px-2 bg-background text-muted-foreground">
+            Login con link de acceso
+          </span>
+        </div>
+      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="nombre@email.com" {...field} />
+                </FormControl>
+                <FormDescription className="text-center">
+                  Ingresa tu email y te enviaremos un link de acceso
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
-            Envíame el link
-          </Button>
-      </form>
-    </Form>
+          />
+            <Button disabled={isLoading} variant="outline" className="w-full">
+              {isLoading ? (
+                <LoadingSpinnerChico />
+              ):
+                <>Envíame el link</>
+              }
+              
+            </Button>
+        </form>
+      </Form>
+
     </div>
   )
 }

@@ -249,6 +249,7 @@ function getGPTMessages(messages: ChatCompletionMessageParam[], clientPrompt: st
 
   const gptMessages: ChatCompletionMessageParam[]= [systemPrompt]
   for (const message of messages) {
+    // @ts-ignore
     gptMessages.push({
       role: message.role,
       content: message.content,

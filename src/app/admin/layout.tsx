@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth";
-import NotAlowedPage from "../(auth)/unauthorized/page";
+import { redirect } from "next/navigation";
 import SideBar from "./sideBar";
 
 interface Props {
@@ -10,11 +10,11 @@ export default async function AdminLayout({ children }: Props) {
   const currentUser = await getCurrentUser()
 
   if (!currentUser) {
-    return <NotAlowedPage message="You must be logged in." />
+    return redirect("/login")
   }
 
   if (currentUser?.role !== "admin") {
-    return <NotAlowedPage message="Only admin role allowed." />
+    return redirect("/unauthorized?message=You are not authorized to access this page")
   }
 
   return (

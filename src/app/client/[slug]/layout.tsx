@@ -1,8 +1,7 @@
-import { getCurrentUser } from "@/lib/auth";
-import SideBar from "./sideBar";
-import NotAlowedPage from "@/app/(auth)/unauthorized/page";
 import { getDataClientBySlug, getDataClientOfUser } from "@/app/admin/clients/(crud)/actions";
-import { getClientBySlug } from "@/services/clientService";
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import SideBar from "./sideBar";
 
 interface Props {
   children: React.ReactNode
@@ -16,7 +15,7 @@ export default async function AdminLayout({ children, params }: Props) {
   const slug = params.slug
 
   if (!currentUser) {
-    return <NotAlowedPage message="Deberías estar logueado." />
+    return redirect("/login")
   }
 
   let client= await getDataClientOfUser(currentUser.id)
@@ -27,7 +26,7 @@ export default async function AdminLayout({ children, params }: Props) {
     return <div>Cliente no encontrado</div>
     
   if (client.slug !== slug) 
-    return <NotAlowedPage message="No tienes permisos para ver este cliente." />
+    return redirect("/unauthorized?message=No tienes permisos para ver este cliente.")
 
   return (
     <>
