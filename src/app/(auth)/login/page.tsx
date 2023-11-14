@@ -17,7 +17,7 @@ export default async function AuthenticationPage() {
   if (role === "admin")
     redirect("/admin/pedidos")
   else if (role === "user")
-    redirect("/")
+    return redirect("/unauthorized?message=You are not authorized to access this page")
 
     return (
       <div className="flex flex-col justify-center space-y-6 w-[380px] mt-10 bg-background text-muted-foreground p-1 rounded-xl">
