@@ -14,7 +14,7 @@ export default function PedidoBox({ pedido }: Props) {
     return (
         <div className="p-2 space-y-2 text-lg border rounded-xl xl:min-w-[400px]">
             <div className="grid grid-cols-1 text-center lg:grid-cols-3">
-                <p className="font-bold">{pedido.operacion}</p>
+                <p className="font-bold lg:text-left">{pedido.operacion}</p>
                 <div className="flex items-center justify-center flex-1 gap-2 font-bold text-center">
                     <p className="whitespace-nowrap">{pedido.tipo}</p>
                     <p className="flex items-center">{pedido.dormitorios}<BedSingle /></p>
