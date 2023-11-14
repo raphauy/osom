@@ -18,6 +18,7 @@ module.exports = {
     extend: {
       colors: {
         "osom-color": "rgb(244,14,101)",
+        "intraprop-color": "#0A417A",        
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

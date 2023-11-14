@@ -13,7 +13,7 @@ export default function SideBar({ slug }: Props) {
   const path= usePathname()
 
   const commonClasses= "flex gap-2 items-center py-1 mx-2 rounded hover:bg-gray-200 dark:hover:text-black"
-  const selectedClasses= "font-bold text-osom-color dark:border-r-white"
+  const selectedClasses= "font-bold text-intraprop-color dark:border-r-white"
 
   const dashboardSelected= path.endsWith(`client/${slug}`)
   const dashboard= clsx(commonClasses, dashboardSelected  && selectedClasses)
@@ -31,7 +31,7 @@ export default function SideBar({ slug }: Props) {
 
   return (
     <>
-      <section className="flex flex-col gap-3 py-4 mt-3 border-r border-r-osom-color/50">
+      <section className="flex flex-col gap-3 py-4 mt-3 border-r border-r-intraprop-color/50">
 
         <Link href={`/client/${slug}`} className={dashboard}>
           <LayoutDashboard size={23} />
@@ -67,5 +67,5 @@ export default function SideBar({ slug }: Props) {
 
 
 function divider() {
-  return <div className="mx-2 my-5 border-b border-b-osom-color/50" />
+  return <div className="mx-2 my-5 border-b border-b-intraprop-color/50" />
 }

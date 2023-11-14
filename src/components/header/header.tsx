@@ -12,19 +12,21 @@ export default async function Header({ children }: Props) {
     const session= await getSession()
 
     return (
-        <div className="flex items-center gap-2 pb-1 border-b border-osom-color/50">
-            <div>
-                <Logo />
-            </div>
-            <div className="flex-1">                                
-                {session && children}
-            </div>
-            
-            <div>
-                <ThemeToggle />
-            </div>
-            <div>
-                <Logged />
+        <div className="w-full text-white border-b border-b-white bg-intraprop-color border-intraprop-color/50">
+            <div className="container flex items-center gap-2">
+                <div>
+                    <Logo />
+                </div>
+                <div className="flex-1">                                
+                    {session && children}
+                </div>
+                
+                <div>
+                    <ThemeToggle />
+                </div>
+                <div>
+                    <Logged />
+                </div>
             </div>
         </div>
     )

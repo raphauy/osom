@@ -21,6 +21,11 @@ export default async function Home() {
     return redirect(`/client/${client.slug}`)
   }
 
+  if (user.role === "admin") {
+    
+    return redirect(`/admin/pedidos`)
+  }
+
   const clients= await getDataClients()
 
 
