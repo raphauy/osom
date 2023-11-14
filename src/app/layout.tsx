@@ -14,8 +14,8 @@ import SessionProvider from '@/components/SessionProvider'
 
 
 export const metadata: Metadata = {
-  title: "Osom Digital AI",
-  description: "Osom Digital AI",
+  title: "Intraprop",
+  description: "Intraprop es una herramienta para profesionales inmobiliarios. Su propósito es potenciar la conectividad entre colegas del rubro para conectar las necesidades de tus clientes y las oportunidades de otros colegas.",
   icons: {
     icon: "/favicon.ico",
   },  
