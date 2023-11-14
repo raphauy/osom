@@ -133,6 +133,7 @@ export async function runThread(pedidoId: string) {
     if (message.role === "assistant" && message.content[0].type === "text") {
       const openaiJson= message.content[0].text.value
       const jsonObject= JSON.parse(openaiJson)
+      const operacion= jsonObject.operacion ? jsonObject.operacion.toUpperCase() : undefined
       const updated = await prisma.pedido.update({
         where: {
           id: pedidoId
@@ -140,7 +141,7 @@ export async function runThread(pedidoId: string) {
         data: {          
           openaiJson,
           contacto: jsonObject.contacto || undefined,
-          operacion: jsonObject.operacion || undefined,
+          operacion: operacion,
           tipo: jsonObject.tipo || undefined,
           presupuesto: jsonObject.presupuesto || undefined,
           zona: jsonObject.zona || undefined,
