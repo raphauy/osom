@@ -1,7 +1,7 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread } from "@/services/pedido-services"
+import { PedidoDAO, PedidoFormValues, createPedido, updatePedido, getPedidoDAO, deletePedido, runThread, createCoincidencesProperties } from "@/services/pedido-services"
 
 export async function getPedidoDAOAction(id: string): Promise<PedidoDAO | null> {
   return getPedidoDAO(id)
@@ -13,9 +13,14 @@ export async function createOrUpdatePedidoAction(id: string | null, data: Pedido
       updated= await updatePedido(id, data)
   } else {
       updated= await createPedido(data)
-  }     
+  }
 
-  revalidatePath("/")
+  if (!updated) throw new Error("Error al crear el pedido")
+  
+  await createCoincidencesProperties(updated.id)
+
+  revalidatePath("/admin/pedidos")
+  revalidatePath("/tablero")
 
   return updated as PedidoDAO
 }
@@ -34,6 +39,7 @@ export async function runThreadAction(id: string): Promise<boolean> {
   console.log("revalidating...");
   
   revalidatePath("/admin/pedidos")
+  revalidatePath("/tablero")
   
   return ok
 }

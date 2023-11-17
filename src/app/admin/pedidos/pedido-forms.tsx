@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/form";
 import { Loader } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
 
 type Props = {
   id?: string;
@@ -35,23 +36,27 @@ export function PedidoForm({ id, closeDialog }: Props) {
     mode: "onChange",
   });
   const [loading, setLoading] = useState(false);
+  const router= useRouter();
 
   const onSubmit = async (data: PedidoFormValues) => {
-    setLoading(true);
-    try {
-      await createOrUpdatePedidoAction(id ? id : null, data);
-      toast({ title: id ? "Pedido actualizado" : "Pedido creado" });
-      closeDialog();
-    } catch (error: any) {
+    setLoading(true)
+    createOrUpdatePedidoAction(id ? id : null, data)
+    .then((data) => {
+      toast({ title: id ? "Pedido actualizado" : "Pedido creado" })
+      closeDialog()
+      router.push(`/tablero?id=${data?.id}`)
+    })
+    .catch((error) => {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
-      });
-    } finally {
+      })
+    })
+    .finally(() => {
       setLoading(false);
-    }
-  };
+    })
+};
 
   useEffect(() => {
     if (id) {

@@ -115,6 +115,8 @@ model Property {
   client                Client?   @relation(fields: [clientId], references: [id], onDelete: NoAction)
   clientId              String?
 
+  coincidences          Coincidence[]
+
   content               String?
   embedding Unsupported("vector(1536)")?
 }
@@ -142,6 +144,7 @@ model Message {
 
 model Pedido {
   id              String      @id @default(cuid())
+  number          Int         @default(autoincrement())
   text            String      @db.Text
   contacto        String?
   operacion       String?
@@ -154,4 +157,16 @@ model Pedido {
   embeddings      Unsupported("vector(1536)")?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  coincidences    Coincidence[]
+}
+
+model Coincidence {
+  id              String      @id @default(cuid())
+  number          Int
+  distance        Float
+  pedido          Pedido      @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  pedidoId        String
+  property        Property    @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  propertyId      String
+  createdAt       DateTime    @default(now())
 }
