@@ -23,7 +23,7 @@ export default async function Home() {
 
   if (user.role === "admin") {
     
-    return redirect(`/admin/pedidos`)
+    redirect("/tablero")
   }
 
   const clients= await getDataClients()

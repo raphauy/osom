@@ -15,7 +15,7 @@ export default async function AuthenticationPage() {
   const user= await getCurrentUser()
   const role= user?.role
   if (role === "admin")
-    redirect("/admin/pedidos")
+    redirect("/tablero")
   else if (role === "user")
     return redirect("/unauthorized?message=You are not authorized to access this page")
 
