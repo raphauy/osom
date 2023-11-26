@@ -42,7 +42,7 @@ export default function PedidoBox({pedido}: Props) {
                         <p>Presupuesto: </p>
                         <p className="font-bold">{pedido.presupuesto}</p>
                     </div>
-                    <p className="">Contacto: {pedido.contacto}</p>                    
+                    <p className="max-w-xs">Contacto: {pedido.contacto}</p>                    
                 </div>
                 <div className="flex flex-col justify-between flex-1 pl-2 border-l gap-7">
                     <div>
