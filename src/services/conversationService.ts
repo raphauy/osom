@@ -1,9 +1,10 @@
 import { prisma } from "@/lib/db";
 
 import { OpenAI } from "openai";
-import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/chat/index.mjs";
 import { PropiedadResult, functions, getProperties, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
+import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
+
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
