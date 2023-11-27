@@ -1,6 +1,6 @@
-import { getCurrentUser } from "@/lib/auth";
-import NotAlowedPage from "@/app/(auth)/unauthorized/page";
 import { getDataClientBySlug, getDataClientOfUser } from "@/app/admin/clients/(crud)/actions";
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import Conversations from "./conversations";
 
 interface Props {
@@ -14,8 +14,8 @@ export default async function AdminLayout({ children, params }: Props) {
   const currentUser = await getCurrentUser()
   const slug = params.slug
 
-  if (!currentUser) {
-    return <NotAlowedPage message="Deberías estar logueado." />
+  if (currentUser?.role !== "admin") {
+    return redirect("/unauthorized?message=You are not authorized to access this page")
   }
 
   let client= await getDataClientOfUser(currentUser.id)
@@ -26,7 +26,7 @@ export default async function AdminLayout({ children, params }: Props) {
     return <div>Cliente no encontrado</div>
     
   if (client.slug !== slug) 
-    return <NotAlowedPage message="No tienes permisos para ver este cliente." />
+    return redirect("/unauthorized?message=No tienes permisos para ver este cliente.")
 
   return (
     <>

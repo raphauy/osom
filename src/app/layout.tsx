@@ -1,4 +1,4 @@
-import { Metadata } from "next"
+import { Metadata, Viewport } from "next"
 import './globals.css'
 
 import { Toaster } from "@/components/ui/toaster"
@@ -16,13 +16,13 @@ import SessionProvider from '@/components/SessionProvider'
 export const metadata: Metadata = {
   title: "Osom Digital AI",
   description: "Osom Digital AI",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "white" },
-    { media: "(prefers-color-scheme: dark)", color: "black" },
-  ],
   icons: {
     icon: "/favicon.ico",
   },  
+}
+
+export const viewport: Viewport = {
+  themeColor: "light",  
 }
 
 interface RootLayoutProps {  

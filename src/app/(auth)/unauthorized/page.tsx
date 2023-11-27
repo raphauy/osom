@@ -3,11 +3,13 @@ import getSession from '@/lib/auth'
 import Link from 'next/link'
 import React from 'react'
 
-interface Props{
-    message: string
+type Props = {
+  searchParams: {
+    message: string;
+  }
 }
-
-export default async function NotAlowedPage({ message }: Props) {
+export default async function NotAlowedPage({ searchParams }: Props) {
+  const message= searchParams.message
 
   const session= await getSession() 
 
