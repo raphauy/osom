@@ -116,7 +116,19 @@ export async function setPrompt(prompt: string, clientId: string) {
     }
   })
 
-  return client  
+  return client   
+}
 
-  
+export async function setBudgetPercentage(clientId: string, budgetPercMin: number, budgetPercMax: number) {
+  const client= await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      budgetPercMin,
+      budgetPercMax
+    }
+  })
+
+  return client   
 }

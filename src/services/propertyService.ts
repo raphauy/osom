@@ -6,6 +6,7 @@ import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
 import { OpenAI } from "langchain/llms/openai";
 import pgvector from 'pgvector/utils';
+import { getClient } from "./clientService";
 
 export default async function getPropertys() {
 
@@ -369,4 +370,164 @@ export async function promptChatGPT(clientId: string, tipo: string, operacion: s
   }
   
   return filteredSimilarityArray  
+}
+
+
+export async function similaritySearchV2(clientId: string, tipo: string, operacion: string, presupuesto: number, caracteristicas: string, limit: number = 5) : Promise<SimilaritySearchResult[]> {
+  const client= await getClient(clientId)
+  if (!client) {
+    return []
+  }
+  const percMin= client.budgetPercMin ? client.budgetPercMin / 100 : 1
+  const percMax= client.budgetPercMax ? client.budgetPercMax / 100 : 1
+
+  console.log("*****************************************************")
+  console.log("percMin: ", percMin)
+  console.log("percMax: ", percMax)  
+
+  let upperLimit= presupuesto * (1+percMax)
+  let lowerLimit= presupuesto * (1-percMin)
+
+  const checkPresupuesto= presupuesto && percMax < 2 && percMin > 0
+  console.log("checkPresupuesto: ", checkPresupuesto)
+
+  upperLimit= Math.round(upperLimit * 100) / 100
+  lowerLimit= Math.round(lowerLimit * 100) / 100
+
+  console.log("upperLimit: ", upperLimit)
+  console.log("lowerLimit: ", lowerLimit)
+  console.log("*****************************************************")
+
+  const embeddings = new OpenAIEmbeddings({
+    openAIApiKey: process.env.OPENAI_API_KEY,
+    verbose: true,
+  })
+  let result: SimilaritySearchResult[]= []
+
+  const esCasa= tipo && tipo.toLowerCase().includes("casa")
+  const esApartamento= tipo && (tipo.toLowerCase().includes("apartamento") || tipo.toLowerCase().includes("apto") || tipo.toLowerCase().includes("departamento") || tipo.toLowerCase().includes("depto"))
+  const esVenta= operacion.toLocaleLowerCase() === "venta" || operacion.toLocaleLowerCase() === "vender" || operacion.toLocaleLowerCase() === "compra" || operacion.toLocaleLowerCase() === "comprar"
+  const esAlquiler= operacion.toLocaleLowerCase() === "alquiler" || operacion.toLocaleLowerCase() === "alquilar" || operacion.toLocaleLowerCase() === "renta" || operacion.toLocaleLowerCase() === "rentar"
+
+  const vector= await embeddings.embedQuery(caracteristicas)
+  const embedding = pgvector.toSql(vector)
+
+  if (checkPresupuesto) {
+    if (esCasa && esVenta) {
+      console.log("esCasa && esVenta && checkPresupuesto")
+      
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("tipo") = 'casa' AND LOWER("enVenta") = 'si' AND "precioVenta"::NUMERIC >= ${lowerLimit} AND "precioVenta"::NUMERIC <= ${upperLimit}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esCasa && esAlquiler) {
+      console.log("esCasa && esAlquiler && checkPresupuesto")
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("tipo") = 'casa' AND LOWER("enAlquiler") = 'si' AND "precioAlquiler"::NUMERIC >= ${lowerLimit} AND "precioAlquiler"::NUMERIC <= ${upperLimit}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esApartamento && esVenta) {
+      console.log("esApartamento && esVenta && checkPresupuesto")
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND (LOWER("tipo") = 'apartamento' OR LOWER("tipo") = 'departamento') AND LOWER("enVenta") = 'si' AND "precioVenta"::NUMERIC >= ${lowerLimit} AND "precioVenta"::NUMERIC <= ${upperLimit}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esApartamento && esAlquiler) {
+      console.log("esApartamento && esAlquiler && checkPresupuesto")
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND (LOWER("tipo") = 'apartamento' OR LOWER("tipo") = 'departamento') AND LOWER("enAlquiler") = 'si' AND "precioAlquiler"::NUMERIC >= ${lowerLimit} AND "precioAlquiler"::NUMERIC <= ${upperLimit}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esVenta) {
+      console.log("esVenta && checkPresupuesto")
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("enVenta") = 'si' AND "precioVenta"::NUMERIC >= ${lowerLimit} AND "precioVenta"::NUMERIC <= ${upperLimit}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esAlquiler) {
+      console.log("esAlquiler && checkPresupuesto")
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enVenta", "enAlquiler", dormitorios, zona, "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("enAlquiler") = 'si' AND "precioAlquiler"::NUMERIC >= ${lowerLimit} AND "precioAlquiler"::NUMERIC <= ${upperLimit}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else {
+      console.log("checkPresupuesto (sin venta ni alquiler)")
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enVenta", "enAlquiler", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property"
+        WHERE "clientId" = ${clientId} AND "precioVenta"::NUMERIC >= ${lowerLimit} AND "precioVenta"::NUMERIC <= ${upperLimit}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    }
+
+  } else {
+    if (esCasa && esVenta) {
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("tipo") = 'casa' AND LOWER("enVenta") = 'si'
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esCasa && esAlquiler) {
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("tipo") = 'casa' AND LOWER("enAlquiler") = 'si' 
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esApartamento && esVenta) {
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND (LOWER("tipo") = 'apartamento' OR LOWER("tipo") = 'departamento') AND LOWER("enVenta") = 'si' 
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esApartamento && esAlquiler) {
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND (LOWER("tipo") = 'apartamento' OR LOWER("tipo") = 'departamento') AND LOWER("enAlquiler") = 'si' 
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esVenta) {
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("enVenta") = 'si' 
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else if (esAlquiler) {
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId} AND LOWER("enAlquiler") = 'si' 
+        ORDER BY distance 
+        LIMIT ${limit}`
+    } else {
+      result = await prisma.$queryRaw`
+        SELECT "idPropiedad", "url", titulo, content, tipo, "enAlquiler", "enVenta", dormitorios, zona, "precioVenta", "precioAlquiler", "monedaVenta", "monedaAlquiler", "clientId", embedding <-> ${embedding}::vector as distance 
+        FROM "Property" 
+        WHERE "clientId" = ${clientId}
+        ORDER BY distance 
+        LIMIT ${limit}`
+    }  
+  }
+
+  result.map((item) => {
+    console.log(`${item.titulo}: ${item.distance}`)    
+  })
+
+  return result
 }

@@ -19,6 +19,8 @@ export type DataClient = {
     rentPercentage?: string
     salePercentage?: string
     whatsAppEndpoint: string | null
+    budgetPercMin?: number | null
+    budgetPercMax?: number | null
     prompt?: string | null
   }
     
@@ -37,6 +39,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         url: client.url || '',
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
+        budgetPercMin: client.budgetPercMin || 20,
+        budgetPercMax: client.budgetPercMax || 20,
         prompt: client.prompt
     }
     return data
@@ -59,6 +63,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         url: client.url || '',
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
+        budgetPercMin: client.budgetPercMin || 20,
+        budgetPercMax: client.budgetPercMax || 20,    
         prompt: client.prompt
     }
     return data
@@ -79,6 +85,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         url: client.url || '',
         cantPropiedades: propertiesCount,
         whatsAppEndpoint: client.whatsappEndpoint,
+        budgetPercMin: client.budgetPercMin || 20,
+        budgetPercMax: client.budgetPercMax || 20,
         prompt: client.prompt
     }
     return data
@@ -107,6 +115,8 @@ export async function getDataClients() {
                 rentPercentage: percentages?.rents,
                 salePercentage: percentages?.sales,
                 whatsAppEndpoint: client.whatsappEndpoint,
+                budgetPercMin: client.budgetPercMin || 20,
+                budgetPercMax: client.budgetPercMax || 20,
                 prompt: client.prompt
             };
         })

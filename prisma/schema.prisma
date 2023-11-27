@@ -71,6 +71,8 @@ model Client {
   properties        Property[]
   conversations     Conversation[]
   whatsappEndpoint  String?
+  budgetPercMin     Int?      @default(20)
+  budgetPercMax     Int?      @default(20)
   prompt            String?   @db.Text
 }
 

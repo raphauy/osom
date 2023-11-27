@@ -1,6 +1,7 @@
 
 import { getDataClients } from "../clients/(crud)/actions"
 import APIToken from "./api-token"
+import BudgetPerc from "./budget-perc"
 import Hook from "./hook"
 
 export default async function ConfigPage() {
@@ -18,6 +19,7 @@ export default async function ConfigPage() {
                         className="w-full p-4 border rounded-lg">
                         <p className="text-2xl font-bold">{client.nombre}</p>
                         <Hook clientId={client.id} />
+                        <BudgetPerc clientId={client.id} />
                     </div>
                 ))
             }

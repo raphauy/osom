@@ -24,6 +24,19 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             return NextResponse.json({ error: "idPropiedad is required" }, { status: 400 })
         }
 
+        // check if the value of precioVenta and precioAlquiler are numbers and return error if not
+        const precioVenta= json.precioVenta
+        const precioAlquiler= json.precioAlquiler
+        if (precioVenta && isNaN(precioVenta)) {
+            console.log("precioVenta is not a number")            
+            return NextResponse.json({ error: "precioVenta is not a number" }, { status: 400 })
+        }
+        if (precioAlquiler && isNaN(precioAlquiler)) {
+            console.log("precioAlquiler is not a number")            
+            return NextResponse.json({ error: "precioAlquiler is not a number" }, { status: 400 })
+        }        
+
+
         const updated= await createOrUpdatePropertyWithPrisma(json, clientId)
 
         if (!updated) return NextResponse.json({ error: "error updating property" }, { status: 502 })

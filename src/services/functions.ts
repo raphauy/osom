@@ -1,3 +1,4 @@
+import { similaritySearchV2 } from "./propertyService";
 
 export const functions= [
   {
@@ -61,15 +62,37 @@ export async function getProperties(tipo: string, operacion: string, presupuesto
   console.log('zona: ' + zona)
   console.log('description: ' + description)
 
-  const fetchResponse = await fetch(apiUrl, {
-    method: 'POST',
-    body: JSON.stringify(requestData),
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  })
+  // const fetchResponse = await fetch(apiUrl, {
+  //   method: 'POST',
+  //   body: JSON.stringify(requestData),
+  //   headers: {
+  //     'Content-Type': 'application/json'
+  //   }
+  // })
+  // const responseData = await fetchResponse.json()
+  // console.log("responseData: ")
+  // console.log(responseData)
+  // return responseData
 
-  const responseData = await fetchResponse.json()
+  let presupuestoNumber= 0
+  try {
+    presupuestoNumber= parseInt(presupuesto)
+  } catch (error) {
+    console.log("error: ", error)
+  }
+
+  const similarityArray= await similaritySearchV2(clientId, tipo, operacion, presupuestoNumber, description)
+  const responseData: PropiedadResult[]= []
+  similarityArray.forEach((item) => {
+      const transformedItem= {
+          url: item.url,
+          titulo: item.titulo,
+          caracteristicas: item.content,
+          distance: item.distance
+      }
+      responseData.push(transformedItem)
+  })            
+
   return responseData
 }
 
@@ -88,4 +111,11 @@ export async function runFunction(name: string, args: any, clientId: string) {
           default:
       return null;
   }
+}
+
+export type PropiedadResult= {
+  url: string
+  titulo: string
+  caracteristicas: string
+  distance: number
 }

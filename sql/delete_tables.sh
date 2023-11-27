@@ -7,11 +7,12 @@ function log_message {
 
 timestamp=$(date +"%Y-%m-%d_%H")
 
-db_user=development
+
+db_user=raphauy
 db_pass=
-db_host=localhost
-db_port=5433
-db_name=osom_nov
+db_host=ep-silent-paper-27806001.us-east-1.aws.neon.tech
+db_port=5432
+db_name=neondb
 db_conn_string=postgresql://$db_user:$db_pass@$db_host:$db_port/$db_name
 
 log_message "Eliminando tablas existentes en la base de datos $db_name de $db_host..."
