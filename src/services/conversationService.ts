@@ -149,6 +149,9 @@ export async function processMessage(id: string) {
   })
 
   let wantsToUseFunction = initialResponse.choices[0].finish_reason == "function_call"
+  const usage= initialResponse.usage
+  console.log("usage:")
+  console.log(usage)  
 
   console.log("wantsToUseFunction: ", wantsToUseFunction)
   
