@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 8061",
     "lint": "next lint",
     "importar": "tsx src/services/properties-script.ts",
     "xlsx": "tsx src/services/properties-xlsx-script.ts",
