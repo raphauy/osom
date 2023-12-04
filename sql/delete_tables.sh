@@ -8,9 +8,9 @@ function log_message {
 timestamp=$(date +"%Y-%m-%d_%H")
 
 
-db_user=raphauy
+db_user=martiniano
 db_pass=
-db_host=ep-silent-paper-27806001.us-east-1.aws.neon.tech
+db_host=ep-delicate-dust-38349510.us-east-1.aws.neon.tech
 db_port=5432
 db_name=neondb
 db_conn_string=postgresql://$db_user:$db_pass@$db_host:$db_port/$db_name

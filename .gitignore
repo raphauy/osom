@@ -5,6 +5,7 @@ propiedades_hus.xlsx
 docker-compose.yml
 production.Dockerfile
 production.Dockerfile.bak
+/sql
 
 # dependencies
 /node_modules
