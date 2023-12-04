@@ -6,7 +6,7 @@ docker-compose.yml
 production.Dockerfile
 production.Dockerfile.bak
 bun.lockb
-/sql
+/sql/delete_tables.sh
 
 # dependencies
 /node_modules
