@@ -13,6 +13,7 @@ import { useEffect, useState } from "react"
 import { getDataClient } from "@/app/admin/clients/(crud)/actions"
 import { useRouter } from "next/navigation"
 import { Textarea } from "@/components/ui/textarea"
+import { Loader } from "lucide-react"
 
 
 const formSchema = z.object({  
@@ -29,16 +30,17 @@ const defaultValues: Partial<PromptFormValues> = {
 interface Props{
   id: string
   update: (json: PromptFormValues) => void
+  prompt: string
 }
 
-export function PromptForm({ id, update }: Props) {
+export function PromptForm({ id, update, prompt }: Props) {
   const form = useForm<PromptFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues,
     mode: "onChange",
   })
   const router= useRouter()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   async function onSubmit(data: PromptFormValues) {
 
@@ -54,13 +56,17 @@ export function PromptForm({ id, update }: Props) {
   }
 
   useEffect(() => {
-    getDataClient(id).then((data) => {
-      if (!data) return
-      data.prompt && form.setValue("prompt", data.prompt)
-      data.id && form.setValue("clienteId", id)
-    })
+    // getDataClient(id).then((data) => {
+    //   if (!data) return
+    //   data.prompt && form.setValue("prompt", data.prompt)
+    //   data.id && form.setValue("clienteId", id)
+    //   setLoading(false)
+    // })
+    form.setValue("prompt", prompt)
+    form.setValue("clienteId", id)
+    setLoading(false)
 
-  }, [form, id])
+  }, [id, prompt, form])
 
 
 
@@ -87,7 +93,7 @@ export function PromptForm({ id, update }: Props) {
         /> 
       <div className="flex justify-end">
           <Button onClick={() => router.back() } type="button" variant={"secondary"} className="w-32">Cancelar</Button>
-          <Button type="submit" className="w-32 ml-2" >{loading ? <LoadingSpinnerChico /> : <p>Guardar</p>}</Button>
+          <Button type="submit" className="w-32 ml-2" >{loading ? <Loader className="animate-spin" /> : <p>Guardar</p>}</Button>
         </div>
       </form>
     </Form>

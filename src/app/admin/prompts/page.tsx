@@ -12,7 +12,7 @@ export default async function PromptPage() {
                     <div key={client.id} 
                         className="w-full p-4 border rounded-lg">
                         <p className="text-2xl font-bold">{client.nombre}</p>
-                        <PromptForm id={client.id} update={updatePrompt} />
+                        <PromptForm id={client.id} update={updatePrompt} prompt={client.prompt || ""} />
                     </div>
                 ))
             }
