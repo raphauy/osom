@@ -17,22 +17,24 @@ export async function POST(req: Request) {
   console.log(messages)
   console.log("clientId:" + clientId)
 
-  const client= await getClient(clientId)
-  if (!client) {
-    return new Response("Client not found", { status: 404 })
-  }
-  if (!client.prompt) {
-    return new Response("Client prompt not found", { status: 404 })
-  }
-
   const reqUrl= req.headers.get("referer");
   console.log("reqUrl: " + reqUrl);
+  const isExperimento = reqUrl?.endsWith("experimento")
 
-  if (reqUrl?.endsWith("experimento")) {
+  if (isExperimento) {
     messages.unshift(getSystemMessageForSocialExperiment())
   } else {
+    const client= await getClient(clientId)
+    if (!client) {
+      return new Response("Client not found", { status: 404 })
+    }
+    if (!client.prompt) {
+      return new Response("Client prompt not found", { status: 404 })
+    }
     messages.unshift(getSystemMessage(client.prompt))
   }
+
+
   
 
   // check if the conversation requires a function call to be made
