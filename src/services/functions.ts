@@ -1,4 +1,4 @@
-import { similaritySearchV2 } from "./propertyService";
+import { getPropertyFromClientById, getPropertyFromClientByURL, similaritySearchV2 } from "./propertyService";
 
 export const functions= [
   {
@@ -42,37 +42,46 @@ export const functions= [
       required: [],
     },
   },
+  {
+    name: "getPropertyByURL",
+    description:
+      "Devuelve la información de la propiedad a partir de la URL de la propiedad. Ejemplo: 'https://hardoy.com.uy/propiedad/478'. Si la URL no existe en la base de datos devuelve un mensaje a enviar al usuario.",
+    parameters: {
+      type: "object",
+      properties: {
+        url: {
+          type: "string",
+          description: "URL de la propiedad que el usuario está intentando consultar.",
+        },
+      },
+      required: ["url"],
+    },    
+  },
+  {
+    name: "getPropertyByReference",
+    description:
+      "Devuelve la información de la propiedad a partir de la referencia de la propiedad. Ejemplos: '478', '1010', '1054517', '2DPPFM', etc. Si la referencia no existe en la base de datos devuelve un mensaje a enviar al usuario.",
+    parameters: {
+      type: "object",
+      properties: {
+        reference: {
+          type: "string",
+          description: "Referencia de la propiedad que el usuario está intentando consultar. Ejemplos: '478', '1010', '1054517', '2DPPFM', etc.",
+        },
+      },
+      required: ["url"],
+    },    
+  },
 ];
 
 
 export async function getProperties(tipo: string, operacion: string, presupuesto: string, zona: string, description: string, clientId: string){
-  const apiUrl = process.env.NODE_ENV === 'development' ? 'http://localhost:3000/api/propiedades' : 'https://osom.rapha.uy/api/propiedades'
-  const requestData = {
-    apiToken: process.env.API_TOKEN,
-    clientId,
-    tipo,
-    operacion,
-    limit: '5',
-    input: description
-  }
 
   console.log('tipo: ' + tipo)
   console.log('operacion: ' + operacion)
   console.log('presupuesto: ' + presupuesto)
   console.log('zona: ' + zona)
   console.log('description: ' + description)
-
-  // const fetchResponse = await fetch(apiUrl, {
-  //   method: 'POST',
-  //   body: JSON.stringify(requestData),
-  //   headers: {
-  //     'Content-Type': 'application/json'
-  //   }
-  // })
-  // const responseData = await fetchResponse.json()
-  // console.log("responseData: ")
-  // console.log(responseData)
-  // return responseData
 
   let presupuestoNumber= 0
   try {
@@ -101,6 +110,40 @@ export async function notifyHuman(clientId: string){
   return "dile al usuario que un agente inmobiliario se va a comunicar con él, saluda y finaliza la conversación. No ofrezcas más ayuda, saluda y listo."
 }
 
+export async function getPropertyByURL(url: string, clientId: string){
+  console.log("getPropertyByURL")
+  const property= await getPropertyFromClientByURL(url, clientId)
+  if (property) {
+    const response: PropiedadResult= {
+      url: property.url || "",
+      titulo: property.titulo || "",
+      caracteristicas: property.content || "",
+      distance: 0
+    }
+    return response
+  } else {
+    console.log("Propiedad no encontrada")
+    return "Propiedad no encontrada. Por favor responde esto al usuario: No encontré una propiedad con ese link. Te gustaría que te contacte un agente inmobiliario para ayudarte a encontrar la propiedad que estás buscando?"
+  }
+}
+
+export async function getPropertyByReference(reference: string, clientId: string){
+  console.log("getPropertyByReference")
+  const property= await getPropertyFromClientById(reference, clientId)
+  if (property) {
+    const response: PropiedadResult= {
+      url: property.url || "",
+      titulo: property.titulo || "",
+      caracteristicas: property.content || "",
+      distance: 0
+    }
+    return response
+  } else {
+    console.log("Propiedad no encontrada")
+    return "Propiedad no encontrada. Por favor responde esto al usuario: No encontré una propiedad con esa referencia. Te gustaría que te contacte un agente inmobiliario para ayudarte a encontrar la propiedad que estás buscando?"
+  }
+}
+
 
 export async function runFunction(name: string, args: any, clientId: string) {
   switch (name) {
@@ -108,7 +151,11 @@ export async function runFunction(name: string, args: any, clientId: string) {
       return getProperties(args["tipo"], args["operacion"], args["presupuesto"], args["zona"], args["description"], clientId);
     case "notifyHuman":
       return notifyHuman(clientId);
-          default:
+    case "getPropertyByURL":
+      return getPropertyByURL(args["url"], clientId);
+    case "getPropertyByReference":
+      return getPropertyByReference(args["reference"], clientId);
+    default:
       return null;
   }
 }

@@ -88,6 +88,30 @@ export async function getProperty(id: string) {
   return found
 }
 
+export async function getPropertyFromClientByURL(url: string, clientId: string) {
+  
+    const found = await prisma.property.findFirst({
+      where: {
+        clientId,
+        url,
+      },
+    })
+  
+    return found
+}
+
+export async function getPropertyFromClientById(idPropiedad: string, clientId: string) {
+    
+      const found = await prisma.property.findFirst({
+        where: {
+          clientId,
+          idPropiedad,
+        },
+      })
+    
+      return found  
+}
+
 export async function getPropertiesCount(clientId: string) {
 
   const found = await prisma.property.count({

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 import { OpenAI } from "openai";
-import { PropiedadResult, functions, getProperties, notifyHuman } from "./functions";
+import { PropiedadResult, functions, getProperties, getPropertyByReference, getPropertyByURL, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 
@@ -157,7 +157,7 @@ export async function processMessage(id: string) {
   
 
   let assistantResponse: string | null = ""
-	let content: PropiedadResult[] | string = []
+	let content: PropiedadResult[] | string | PropiedadResult = []
   let notificarAgente = false
   let gptDataArray: gptPropertyData[] = []
 	// Step 2: Check if ChatGPT wants to use a function
@@ -214,6 +214,32 @@ export async function processMessage(id: string) {
 			})
       notificarAgente = true
 		}
+
+    if(initialResponse.choices[0].message.function_call.name == "getPropertyByURL"){
+			let argumentObj = JSON.parse(initialResponse.choices[0].message.function_call.arguments)      
+      const url= argumentObj.url
+			content = await getPropertyByURL(url, conversation.clientId)
+			messages.push(initialResponse.choices[0].message)
+			messages.push({
+				role: "function",
+				name: "getPropertyByURL", 
+				content: JSON.stringify(content),
+			})
+      //notificarAgente = true
+		}
+
+    if(initialResponse.choices[0].message.function_call.name == "getPropertyByReference"){
+      let argumentObj = JSON.parse(initialResponse.choices[0].message.function_call.arguments)      
+      const reference= argumentObj.reference
+      content = await getPropertyByReference(reference, conversation.clientId)
+      messages.push(initialResponse.choices[0].message)
+      messages.push({
+        role: "function",
+        name: "getPropertyByReference", 
+        content: JSON.stringify(content),
+      })
+      //notificarAgente = true
+    }
 
     // second invocation of ChatGPT to respond to the function call
     let step4response = await openai.chat.completions.create({
