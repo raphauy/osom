@@ -42,6 +42,7 @@ export async function POST(request: Request, { params }: { params: { clientId: s
                 tipo: lastSearch.tipo || "",
                 zona: lastSearch.zona || "",
                 presupuesto: lastSearch.presupuesto || "",
+                fecha: lastSearch.updatedAt?.toISOString().split("T")[0] || "",
             }
         }
 
@@ -61,5 +62,6 @@ type LastSearchResponse = {
         tipo: string,
         zona: string,
         presupuesto: string,
+        fecha: string,
     }
 }

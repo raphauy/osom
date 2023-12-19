@@ -40,7 +40,7 @@ export default async function ChatPage({ params: { id } }: Props) {
             <p className="text-lg font-bold">{conversation.celular} ({conversation.fecha})</p>
             {
               conversation.operacion && (
-                <div className="flex items-center justify-center gap-2">Última intención: 
+                <div className="flex items-center justify-center gap-2">Última búsqueda: 
                   <p className="font-bold">{conversation.operacion?.toUpperCase()},</p>
                   <p className="font-bold">{conversation.tipo?.toLocaleLowerCase()},</p>
                   <p className="font-bold">{conversation.zona},</p>
