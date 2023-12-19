@@ -6,35 +6,39 @@ import useCopyToClipboard from "@/lib/useCopyToClipboard"
 import { Copy, Edit } from "lucide-react"
 import { useEffect, useState } from "react"
 import { EndpointDialog } from "./(crud)/endpoint-dialog"
-import { getDataClient, updateEndpoint } from "../clients/(crud)/actions"
-import { usePathname } from "next/navigation"
+import { DataClient, getDataClient, updateEndpoint } from "../clients/(crud)/actions"
+import { usePathname, useSearchParams } from "next/navigation"
 
 interface Props {
-    clientId: string
+    basePath: string
 }
 
-export default function Hook({ clientId }: Props) {
+export default function Hook({ basePath }: Props) {
 
     const [value, copy] = useCopyToClipboard()
-    const [hook, setHook] = useState(`https://osom.rapha.uy/api/${clientId}/conversation`)
+    const [client, setClient] = useState<DataClient>()
+    const [hook, setHook] = useState(`${basePath}/api/${client?.id}/conversation`)
     const [endPoint, setEndPoint] = useState("No configurado")
-    const [updateAPIEndpoint, setUpdateAPIEndpoint] = useState(`https://osom.rapha.uy/api/${clientId}/update`)
+    const [updateAPIEndpoint, setUpdateAPIEndpoint] = useState(`${basePath}/${client?.id}/update`)
+    const [lastSearchAPIEndpoint, setLastSearchAPIEndpoint] = useState(`${basePath}/api/${client?.id}/lastsearch`)
+    const searchParams= useSearchParams()
 
     useEffect(() => {
-        getDataClient(clientId).then((data) => {
+        const clientId= searchParams.get("clientId")
+        if(!clientId) return
+
+        const client= getDataClient(clientId)
+        .then((data) => {
             if (!data) return
+            setClient(data)
             data.whatsAppEndpoint && setEndPoint(data.whatsAppEndpoint)
+            setHook(`${basePath}/api/${data.id}/conversation`)
+            setUpdateAPIEndpoint(`${basePath}/${data.id}/update`)
+            setLastSearchAPIEndpoint(`${basePath}/api/${data.id}/lastsearch`)
         })
 
-        const host= window.location.host
-        const port= window.location.port
-        let basePath= "https://" + host
-        if (host === "localhost") basePath= "http://localhost:" + port
-        
-        setHook(`${basePath}/api/${clientId}/conversation`)        
-        setUpdateAPIEndpoint(`${basePath}/api/${clientId}/update`)
-        
-    }, [clientId])
+       
+    }, [searchParams, basePath])
     
 
     function copyHookToClipboard(){   
@@ -52,10 +56,16 @@ export default function Hook({ clientId }: Props) {
         toast({title: "Update API Endpoint copiado" })
     }
 
+    function copyLastSearchAPIEndpointIdToClipboard(){
+        copy(lastSearchAPIEndpoint)    
+        toast({title: "Las Search API Endpoint copiado" })
+    }
+
     const editTrigger= (<Edit size={30} className="pr-2 hover:cursor-pointer"/>)
 
     return (
-        <div>
+        <div className="w-full p-4 border rounded-lg">
+            <p className="text-2xl font-bold">Hooks ({client?.nombre})</p>
             <div className="flex items-end gap-4 pb-3 mb-3 border-b">
                 <p className="mt-5"><strong>Entrante</strong>: {hook}</p>
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyHookToClipboard} /></Button>
@@ -63,14 +73,20 @@ export default function Hook({ clientId }: Props) {
 
             <div className="flex items-center gap-4 pb-3 mb-3 border-b">
                 <p><strong>Saliente</strong>: {endPoint}</p>
-                <EndpointDialog update={updateEndpoint} title="Configurar WhatsApp Endpoint" trigger={editTrigger} id={clientId} />
+                <EndpointDialog update={updateEndpoint} title="Configurar WhatsApp Endpoint" trigger={editTrigger} id={client?.id || ""} />
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyEndPointToClipboard} /></Button>
             </div>
 
             <div className="flex items-center gap-4 pb-3 mb-3 border-b">
-                <p><strong>Update API Endpoint</strong>: {updateAPIEndpoint}</p>
+                <p><strong>Update API</strong>: {updateAPIEndpoint}</p>
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyUpdateAPIEndpointIdToClipboard} /></Button>
             </div>
+
+            <div className="flex items-center gap-4 pb-3 mb-3 border-b">
+                <p><strong>Last Search API</strong>: {lastSearchAPIEndpoint}</p>
+                <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyLastSearchAPIEndpointIdToClipboard} /></Button>
+            </div>
+
         </div>
     )
 }

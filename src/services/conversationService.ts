@@ -4,6 +4,7 @@ import { OpenAI } from "openai";
 import { PropiedadResult, functions, getProperties, getPropertyByReference, getPropertyByURL, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
+import { set } from "date-fns";
 
 
 const openai = new OpenAI({
@@ -203,6 +204,8 @@ export async function processMessage(id: string) {
 				content: JSON.stringify(content),
 			})
 
+      await setSearch(conversation.id, operacion, tipo, presupuesto, zona)
+
     }
 		if(initialResponse.choices[0].message.function_call.name == "notifyHuman"){
 			content = await notifyHuman(conversation.clientId)
@@ -373,6 +376,43 @@ export async function updateConversation(id: string, role: string, content: stri
   return updated
 }
 
+export async function setSearch(id: string, operacion: string, tipo: string, presupuesto: string, zona: string) {
+
+  const updated= await prisma.conversation.update({
+    where: {
+      id
+    },
+    data: {
+      operacion,
+      tipo,
+      presupuesto,
+      zona,
+    }
+    })
+
+  return updated
+}
+
+export async function getLastSearch(clientId: string, phone: string){
+  console.log("clientId: ", clientId)
+  console.log("phone: ", phone)
+  
+  const found = await prisma.conversation.findFirst({
+    where: {
+      clientId,
+      phone,
+      operacion: {
+        not: null
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  })
+
+  return found
+
+}
 
 export async function deleteConversation(id: string) {
   

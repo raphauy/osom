@@ -1,4 +1,4 @@
-import { messageArrived, processMessage } from "@/services/conversationService";
+import { getLastSearch, messageArrived, processMessage } from "@/services/conversationService";
 import { NextResponse } from "next/server";
 
 
@@ -24,20 +24,28 @@ export async function POST(request: Request, { params }: { params: { clientId: s
             return NextResponse.json({ error: "phone is required" }, { status: 400 })
         }
 
-        const text = message.text
-        if (!text) {
-            return NextResponse.json({ error: "text is required" }, { status: 400 })
-        }
 
         console.log("phone: ", phone)
-        console.log("text: ", text)
 
-        const messageStored= await messageArrived(phone, text, clientId, "user", "")
-        console.log("message stored")
-        
-        processMessage(messageStored.id)
+        const lastSearch = await getLastSearch(clientId, phone)
+        console.log("lastSearch: ", lastSearch)
 
-        return NextResponse.json({ data: "ACK" }, { status: 200 })
+        if (!lastSearch) {
+            return NextResponse.json({ data: "Last Search not found" }, { status: 200 })
+        }
+
+        const data: LastSearchResponse = {
+            data: {
+                clientId: lastSearch.clientId,
+                phone: lastSearch.phone,
+                operacion: lastSearch.operacion?.toUpperCase() || "",
+                tipo: lastSearch.tipo || "",
+                zona: lastSearch.zona || "",
+                presupuesto: lastSearch.presupuesto || "",
+            }
+        }
+
+        return NextResponse.json( data, { status: 200 })
 
     } catch (error) {
         return NextResponse.json({ error: "error: " + error}, { status: 502 })        
@@ -45,3 +53,13 @@ export async function POST(request: Request, { params }: { params: { clientId: s
    
 }
 
+type LastSearchResponse = {
+    data:{
+        clientId: string,
+        phone: string,
+        operacion: string,
+        tipo: string,
+        zona: string,
+        presupuesto: string,
+    }
+}

@@ -121,6 +121,8 @@ export async function getDataClients() {
             };
         })
     );
+
+    revalidatePath(`/admin/config`)
     
     return data    
 }

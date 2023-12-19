@@ -122,13 +122,17 @@ model Property {
 }
 
 model Conversation {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  phone     String
-  messages  Message[]
-  client    Client  @relation(fields: [clientId], references: [id], onDelete: NoAction)
-  clientId  String
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  phone       String
+  messages    Message[]
+  client      Client  @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  clientId    String
+  operacion   String?
+  tipo        String?
+  zona        String?
+  presupuesto String?
 }
 
 model Message {

@@ -1,19 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useChat } from "ai/react";
 import clsx from "clsx";
 import { Bot, Loader, RefreshCcw, SendIcon, User } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import LoadingSpinner, { LoadingSpinnerChico } from "@/components/loadingSpinner";
-import Textarea from "react-textarea-autosize";
-import { useRouter, useSearchParams } from "next/navigation";
-import { ClientSelector, SelectorData } from "./client-selector";
-import getClients from "@/services/clientService";
-import { getDataClients } from "../clients/(crud)/actions";
-import { set } from "date-fns";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import Textarea from "react-textarea-autosize";
+import remarkGfm from "remark-gfm";
+import { ClientSelector, SelectorData } from "../client-selector";
+import { getDataClients } from "../clients/(crud)/actions";
 
 const examples = [
   "Busco casa para la venta en ...",
@@ -64,7 +61,7 @@ export default function Chat() {
 
   return (
     <main className="flex flex-col items-center justify-between w-full pb-40">
-      <div className="min-w-[270px]">
+      <div className="min-w-[270px] my-5">
         <ClientSelector selectors={clients} />
       </div>
       {messages.length > 0 ? (

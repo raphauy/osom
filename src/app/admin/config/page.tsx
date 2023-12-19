@@ -1,29 +1,34 @@
 
+import { ClientSelector, SelectorData } from "../client-selector"
 import { getDataClients } from "../clients/(crud)/actions"
 import APIToken from "./api-token"
-import BudgetPerc from "./budget-perc"
-import Hook from "./hook"
+import ClientConfig from "./client-config"
 
-export default async function ConfigPage() {
+type Props = {
+    searchParams: {
+        clientId: string
+    }
+}
+export default async function ConfigPage({ searchParams }: Props) {
+
+    const clientId= searchParams.clientId
+    console.log("clientId", clientId)    
 
     const clients= await getDataClients()
+    const client= clients.find((client) => client.id === clientId)
+    const selectors: SelectorData[]= clients.map((client) => ({ slug: client.id, name: client.nombre }))
 
     const API_TOKEN= process.env.API_TOKEN || "No configurado"
 
     return (
-        <div className="container mt-10 space-y-5">
-            <p className="mb-4 text-3xl font-bold text-center">Hooks para WhatsApp</p>
+        <div className="flex flex-col items-center w-full p-5 gap-7">
+            <p className="text-3xl font-bold text-center">Configuración</p>
+            <div className="min-w-[270px] w-fit">
+                <ClientSelector selectors={selectors} />
+            </div>
             {
-                clients.map(client => (
-                    <div key={client.id} 
-                        className="w-full p-4 border rounded-lg">
-                        <p className="text-2xl font-bold">{client.nombre}</p>
-                        <Hook clientId={client.id} />
-                        <BudgetPerc clientId={client.id} />
-                    </div>
-                ))
+                client && <ClientConfig client={client} />
             }
-            <p className="mt-3 mb-4 text-3xl font-bold text-center">Authorization tokens</p>
             <APIToken apiToken={API_TOKEN} />
         </div>
     )

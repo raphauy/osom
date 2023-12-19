@@ -23,7 +23,8 @@ export default function APIToken({apiToken}: Props) {
 
 
     return (
-        <div>
+        <div className="w-full p-4 border rounded-lg">
+            <p className="mb-4 text-2xl font-bold">Authorization tokens</p>
             <div className="flex items-end gap-4 pb-3 mb-3 border-b">
                 <p className="mt-5"><strong>API token (Bearer)</strong>: {apiTokenValue}</p>
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyApiTokenToClipboard} /></Button>

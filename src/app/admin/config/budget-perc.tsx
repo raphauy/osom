@@ -31,7 +31,8 @@ export default function BudgetPerc({ clientId }: Props) {
     const editTrigger= (<Edit size={30} className="pr-2 hover:cursor-pointer"/>)
 
     return (
-        <div>
+        <div className="w-full p-4 border rounded-lg">
+            <p className="text-2xl font-bold">Porcentajes para presupuesto</p>
             <div className="flex items-end gap-4 pb-3 mb-3 border-b">
                 <p className="mt-5"><strong>Porcentaje Presupuesto:  </strong></p>
                 <p className="mt-5"><strong>Mínimo:</strong> {percMin}%</p>

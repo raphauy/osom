@@ -7,6 +7,7 @@ import { Bot, User } from "lucide-react"
 import GPTData from "./gpt-data"
 import { getCurrentUser } from "@/lib/auth"
 import { parse } from "path"
+import { formatPresupuesto } from "@/lib/utils"
 
 interface Props {
     params: {
@@ -35,7 +36,19 @@ export default async function ChatPage({ params: { id } }: Props) {
 
     return (
         <main className="flex flex-col items-center justify-between w-full p-3 border-l">
-            <p className="w-full pb-2 text-lg font-bold text-center border-b">{conversation.celular} ({conversation.fecha})</p>
+          <div className="w-full pb-2 text-center border-b">
+            <p className="text-lg font-bold">{conversation.celular} ({conversation.fecha})</p>
+            {
+              conversation.operacion && (
+                <div className="flex items-center justify-center gap-2">Última intención: 
+                  <p className="font-bold">{conversation.operacion?.toUpperCase()},</p>
+                  <p className="font-bold">{conversation.tipo?.toLocaleLowerCase()},</p>
+                  <p className="font-bold">{conversation.zona},</p>
+                  <p className="font-bold">{formatPresupuesto(conversation.presupuesto)}</p>
+                </div>
+              )
+            }
+          </div>  
           {
             transformedMessages.map((message, i) => (
               <div key={i} className="w-full">

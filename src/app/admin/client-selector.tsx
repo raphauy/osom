@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronsUpDown, Loader } from "lucide-react"
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
@@ -32,23 +32,27 @@ export function ClientSelector({ selectors }: Props) {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
     const [searchValue, setSearchValue] = React.useState("")
+    const [loading, setLoading] = React.useState(false)
     const router= useRouter()
     const searchParams= useSearchParams()
+    const path= usePathname()
 
     React.useEffect(() => {
       const clientId= searchParams.get('clientId')
       
-      const lineName= selectors.find(selector => selector.slug === clientId)?.name
-      lineName && setValue(lineName)
-    
+      const name= selectors.find(selector => selector.slug === clientId)?.name
+      name && setValue(name)
+
+      setLoading(false)
+
     }, [searchParams, selectors])
     
   
     const filteredValues = React.useMemo(() => {
       if (!searchValue) return selectors
       const lowerCaseSearchValue = searchValue.toLowerCase();
-      return selectors.filter((line) => 
-      line.name.toLowerCase().includes(lowerCaseSearchValue)
+      return selectors.filter((client) => 
+      client.name.toLowerCase().includes(lowerCaseSearchValue)
       )
     }, [selectors, searchValue])
   
@@ -61,7 +65,7 @@ export function ClientSelector({ selectors }: Props) {
     }
   
     return (
-      <div className="w-full px-1 mt-2 mb-4">
+      <div className="w-full px-1">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
@@ -73,7 +77,11 @@ export function ClientSelector({ selectors }: Props) {
               {value
                 ? selectors.find(selector => selector.name.toLowerCase() === value.toLowerCase())?.name
                 : "Seleccionar cliente..."}
-              <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+              {
+                loading ? 
+                  <Loader className="animate-spin" /> : 
+                  <ChevronsUpDown className="w-4 h-4 ml-2 opacity-50 shrink-0" />
+              }
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[270px] p-0">
@@ -84,7 +92,7 @@ export function ClientSelector({ selectors }: Props) {
               </div>
               
               <CommandEmpty>Cliente no encontrado</CommandEmpty>
-              <CommandGroup>
+              <CommandGroup onClick={() => setLoading(true)}>
                 {filteredValues.map((line) => (
                   <CommandItem
                     key={line.slug}
@@ -93,7 +101,7 @@ export function ClientSelector({ selectors }: Props) {
                         setValue("")
                       } else {
                         setValue(currentValue)
-                        router.push(`/admin/chat?clientId=${line.slug}`)
+                        router.push(`${path}?clientId=${line.slug}`)
                       }
                       setSearchValue("")
                       setOpen(false)

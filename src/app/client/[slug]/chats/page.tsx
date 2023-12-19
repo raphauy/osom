@@ -15,8 +15,6 @@ export default async function ChatPage({ params: { slug } }: Props) {
     const client= await getClientBySlug(slug)
     if (!client) return <div>Cliente no encontrado</div>
 
-    const data= await getDataConversations(client.id)
-
     return (
         <div className="flex items-center justify-center w-full gap-4 mt-32 text-2xl">
             
