@@ -33,7 +33,7 @@ export default function Hook({ basePath }: Props) {
             setClient(data)
             data.whatsAppEndpoint && setEndPoint(data.whatsAppEndpoint)
             setHook(`${basePath}/api/${data.id}/conversation`)
-            setUpdateAPIEndpoint(`${basePath}/${data.id}/update`)
+            setUpdateAPIEndpoint(`${basePath}/api/${data.id}/update`)
             setLastSearchAPIEndpoint(`${basePath}/api/${data.id}/lastsearch`)
         })
 
