@@ -1,52 +1,11 @@
 "use server"
 
-import { getPropertiesOfClient, getProperty } from "@/services/propertyService";
+import { getDataClient } from "@/app/admin/clients/(crud)/actions";
+import { getCurrentUser } from "@/lib/auth";
+import { deleteAllPropertiesOfClient, deleteProperty, getPropertiesOfClient, getProperty } from "@/services/propertyService";
 import { Property } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-/**
- * model Property {
-  id                     String    @id @default(cuid())
-  idPropiedad            String?
-  tipo                   String?
-  titulo                 String?
-  descripcion            String?
-  zona                   String?
-  ciudad                 String?
-  departamento           String?
-  pais                   String?
-  enVenta                String?
-  enAlquiler             String?
-  enAlquilerTemporal     String?
-  monedaVenta            String?
-  precioVenta            String?
-  monedaAlquiler         String?
-  precioAlquiler         String?
-  monedaAlquilerTemporal String?
-  precioAlquilerTemporal String?
-  alquilada              String?  
-  dormitorios            String?
-  banios                 String?
-  garages                String?
-  parrilleros            String?
-  piscinas               String?
-  calefaccion            String?
-  amueblada              String?
-  piso                   String?
-  pisosEdificio          String?
-  seguridad              String?
-  asensor                String?
-  lavadero               String?
-  superficieTotal        String?
-  superficieConstruida   String?
-  monedaGastosComunes    String?
-  gastosComunes          String?
-
-  client                Client?   @relation(fields: [clientId], references: [id], onDelete: NoAction)
-  clientId              String?
-}
-
- */
 
 export type DataProperty = {
     id: string
@@ -84,4 +43,38 @@ export type DataProperty = {
     superficieConstruida: string
     monedaGastosComunes: string
     gastosComunes: string    
+}
+
+export async function deletePropertyAction(id: string): Promise<boolean> {    
+  const currentUser= await getCurrentUser()
+  if (!currentUser) return false
+  const isAdmin= currentUser?.role === 'admin'
+  if (!isAdmin) throw new Error('No tienes permisos para realizar esta acción')
+
+  const deleted= await deleteProperty(id)
+  if (!deleted) return false
+
+  if (!deleted.clientId) return false
+
+  const client= await getDataClient(deleted.clientId)
+
+  revalidatePath(`/client/${client?.slug}/properties`)
+
+  return true
+}
+
+export async function deleteAllPropertiesOfClientAction(clientId: string): Promise<boolean> {    
+  const currentUser= await getCurrentUser()
+  if (!currentUser) return false
+  const isAdmin= currentUser?.role === 'admin'
+  if (!isAdmin) throw new Error('No tienes permisos para realizar esta acción')
+
+  const properties= await deleteAllPropertiesOfClient(clientId)
+  if (!properties) return false
+
+  const client= await getDataClient(clientId)
+
+  revalidatePath(`/client/${client?.slug}/properties`)
+
+  return true
 }

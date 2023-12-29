@@ -6,6 +6,7 @@ import { columns } from "./columns"
 import { DataTable } from "./data-table"
 import { getPropertiesOfClient } from "@/services/propertyService"
 import { getClient, getClientBySlug } from "@/services/clientService"
+import { DeleteDialog } from "./(crud)/delete-all-dialog"
 
 interface Props {
   params: {
@@ -34,6 +35,10 @@ export default async function PropertiesPage({ params: { slug } }: Props) {
   const calefacciones: string[]= (Array.from(new Set(properties.map((p) => p.calefaccion))).filter((calefaccion) => calefaccion !== null && calefaccion !== "") as string[]).sort((a, b) => a.localeCompare(b))
   const amuebladas: string[]= (Array.from(new Set(properties.map((p) => p.amueblada))).filter((amueblada) => amueblada !== null && amueblada !== "") as string[]).sort((a, b) => a.localeCompare(b))
   const pisos: string[]= (Array.from(new Set(properties.map((p) => p.piso))).filter((piso) => piso !== null && piso !== "") as string[]).sort((a, b) => a.localeCompare(b))
+
+  const eliminateTrigger= (<Button variant="destructive" >Elimar todas las propiedades</Button>)
+  const title= "Eliminar Propiedades"
+  const description= `Seguro que desea eliminar todas las propiedades del cliente ${client.name} (${properties.length} propiedades)?`
 
   return (
     <div className="w-full">
@@ -64,6 +69,12 @@ export default async function PropertiesPage({ params: { slug } }: Props) {
           pisos={pisos}
         />
       </div>
+
+
+      <div className="flex justify-end py-7">
+        <DeleteDialog title={title} description={description} trigger={eliminateTrigger} clientId={client.id} />
+      </div>
+
     </div>
 )
 }
