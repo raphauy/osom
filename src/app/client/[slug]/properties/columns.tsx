@@ -413,7 +413,6 @@ export const columns: ColumnDef<Property>[] = [
     id: "actions",
     cell: ({ row }) => {
       const data= row.original
-      
 
       const eliminateTrigger= (<Trash2 className="text-red-400 hover:cursor-pointer"/>)
       const title= "Eliminar Propiedad"
