@@ -119,6 +119,7 @@ model Property {
 
   content               String?
   embedding Unsupported("vector(1536)")?
+  embeddingProyecto Unsupported("vector(1536)")?
 }
 
 model Conversation {

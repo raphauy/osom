@@ -1,4 +1,4 @@
-import { getPropertyFromClientById, getPropertyFromClientByURL, similaritySearchV2 } from "./propertyService";
+import { getPropertyFromClientById, getPropertyFromClientByURL, similaritySearchProyecto, similaritySearchV2 } from "./propertyService";
 
 export const functions= [
   {
@@ -69,7 +69,22 @@ export const functions= [
           description: "Referencia de la propiedad que el usuario está intentando consultar. Ejemplos: '478', '1010', '1054517', '2DPPFM', etc.",
         },
       },
-      required: ["url"],
+      required: ["reference"],
+    },    
+  },
+  {
+    name: "getProyecto",
+    description:
+      "Devuelve la información de un Proyecto inmobiliario a partir de su nombre. También llamado Emprendimiento inmobiliario. Esta función utiliza una búsqueda semántica con Embedding, por lo que aunque el usuario no brinde el nombre completo, la búsqueda puede arrojar el resultado si hay coincidencia semántica.",
+    parameters: {
+      type: "object",
+      properties: {
+        nombre: {
+          type: "string",
+          description: "Referencia al nombre del proyecto que el usuario está intentando consultar. Ejemplos: 'Torre Arenas - Malvín', 'Edificio - Barrio Sur', 'VIA 21 - Punta Carretas', 'Gala Pop - Tres Cruces', 'Osaka Carrasco Norte - barrio privado', etc.",
+        },
+      },
+      required: ["nombre"],
     },    
   },
 ];
@@ -144,6 +159,30 @@ export async function getPropertyByReference(reference: string, clientId: string
   }
 }
 
+export async function getProyecto(nombre: string, clientId: string){
+  console.log("**** getProyecto ****")
+  console.log('nombre: ' + nombre)
+
+  if (!nombre) {
+    console.log("nombre no puede ser null")
+    return "nombre no puede ser null"
+  }
+
+  const similarityArray= await similaritySearchProyecto(clientId, nombre)
+  const responseData: PropiedadResult[]= []
+  similarityArray.forEach((item) => {
+      const transformedItem= {
+          url: item.url,
+          titulo: item.titulo,
+          caracteristicas: item.content,
+          distance: item.distance
+      }
+      responseData.push(transformedItem)
+  })
+
+  return responseData
+}
+
 
 export async function runFunction(name: string, args: any, clientId: string) {
   switch (name) {
@@ -155,6 +194,8 @@ export async function runFunction(name: string, args: any, clientId: string) {
       return getPropertyByURL(args["url"], clientId);
     case "getPropertyByReference":
       return getPropertyByReference(args["reference"], clientId);
+    case "getProyecto":
+      return getProyecto(args["nombre"], clientId);
     default:
       return null;
   }

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 import { OpenAI } from "openai";
-import { PropiedadResult, functions, getProperties, getPropertyByReference, getPropertyByURL, notifyHuman } from "./functions";
+import { PropiedadResult, functions, getProperties, getPropertyByReference, getPropertyByURL, getProyecto, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { set } from "date-fns";
@@ -9,6 +9,7 @@ import { set } from "date-fns";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  //organization: "org-"
 })
 
 export default async function getConversations() {
@@ -241,7 +242,18 @@ export async function processMessage(id: string) {
         name: "getPropertyByReference", 
         content: JSON.stringify(content),
       })
-      //notificarAgente = true
+    }
+
+    if(initialResponse.choices[0].message.function_call.name == "getProyecto"){
+      let argumentObj = JSON.parse(initialResponse.choices[0].message.function_call.arguments)      
+      const nombre= argumentObj.nombre
+      content = await getProyecto(nombre, conversation.clientId)
+      messages.push(initialResponse.choices[0].message)
+      messages.push({
+        role: "function",
+        name: "getProyecto", 
+        content: JSON.stringify(content),
+      })
     }
 
     // second invocation of ChatGPT to respond to the function call
