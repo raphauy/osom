@@ -254,6 +254,15 @@ export async function processMessage(id: string) {
         name: "getProyecto", 
         content: JSON.stringify(content),
       })
+
+      gptDataArray= content.map((item) => {
+        return {
+          titulo: item.titulo,
+          url: item.url,
+          distance: parseFloat(item.distance.toFixed(3))
+        }
+      })
+
     }
 
     // second invocation of ChatGPT to respond to the function call

@@ -165,7 +165,7 @@ export async function getProyecto(nombre: string, clientId: string){
 
   if (!nombre) {
     console.log("nombre no puede ser null")
-    return "nombre no puede ser null"
+    return []
   }
 
   const similarityArray= await similaritySearchProyecto(clientId, nombre)
