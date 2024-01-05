@@ -20,6 +20,7 @@ export default function Hook({ basePath }: Props) {
     const [hook, setHook] = useState(`${basePath}/api/${client?.id}/conversation`)
     const [endPoint, setEndPoint] = useState("No configurado")
     const [updateAPIEndpoint, setUpdateAPIEndpoint] = useState(`${basePath}/${client?.id}/update`)
+    const [deleteAPIEndpoint, setDeleteAPIEndpoint] = useState(`${basePath}/${client?.id}/delete`)
     const [lastSearchAPIEndpoint, setLastSearchAPIEndpoint] = useState(`${basePath}/api/${client?.id}/lastsearch`)
     const searchParams= useSearchParams()
 
@@ -34,6 +35,7 @@ export default function Hook({ basePath }: Props) {
             data.whatsAppEndpoint && setEndPoint(data.whatsAppEndpoint)
             setHook(`${basePath}/api/${data.id}/conversation`)
             setUpdateAPIEndpoint(`${basePath}/api/${data.id}/update`)
+            setDeleteAPIEndpoint(`${basePath}/api/${data.id}/delete`)
             setLastSearchAPIEndpoint(`${basePath}/api/${data.id}/lastsearch`)
         })
 
@@ -54,6 +56,11 @@ export default function Hook({ basePath }: Props) {
     function copyUpdateAPIEndpointIdToClipboard(){   
         copy(updateAPIEndpoint)    
         toast({title: "Update API Endpoint copiado" })
+    }
+
+    function copyDeleteAPIEndpointIdToClipboard(){
+        copy(deleteAPIEndpoint)    
+        toast({title: "Delete API Endpoint copiado" })
     }
 
     function copyLastSearchAPIEndpointIdToClipboard(){
@@ -80,6 +87,11 @@ export default function Hook({ basePath }: Props) {
             <div className="flex items-center gap-4 pb-3 mb-3 border-b">
                 <p><strong>Update API</strong>: {updateAPIEndpoint}</p>
                 <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyUpdateAPIEndpointIdToClipboard} /></Button>
+            </div>
+
+            <div className="flex items-center gap-4 pb-3 mb-3 border-b">
+                <p><strong>Delete API</strong>: {deleteAPIEndpoint}</p>
+                <Button variant="ghost" className="p-1 h-7"><Copy onClick={copyDeleteAPIEndpointIdToClipboard} /></Button>
             </div>
 
             <div className="flex items-center gap-4 pb-3 mb-3 border-b">
