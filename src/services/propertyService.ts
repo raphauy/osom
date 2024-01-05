@@ -631,7 +631,7 @@ export async function similaritySearchProyecto(clientId: string, nombre: string,
         WHERE "clientId" = ${clientId} 
           AND LOWER("tipo") = 'emprendimiento'
     ) as subquery
-    WHERE distance < 0.5
+    WHERE distance < 0.57
     ORDER BY distance 
     LIMIT ${limit}`
 
