@@ -49,7 +49,7 @@ export default async function PropertiesPage({ params: { slug } }: Props) {
       <div className="container p-3 py-4 mx-auto border rounded-md text-muted-foreground dark:text-white">
         <DataTable 
           columns={columns}
-          columnsOff={["idPropiedad", "descripcion", "pais", "enVenta", "enAlquiler", "alquilada", "dormitorios", "banios", "garages", "parrilleros", "piscinas", "calefaccion", "amueblada", "piso", "seguridad", "asensor", "lavadero", "superficieConstruida"]}
+          columnsOff={["descripcion", "pais", "enVenta", "enAlquiler", "alquilada", "dormitorios", "banios", "garages", "parrilleros", "piscinas", "calefaccion", "amueblada", "piso", "seguridad", "asensor", "lavadero", "superficieConstruida", "ciudad", "departamento"]}
           data={properties} 
           tipos={tipos} 
           zonas={zonas} 

@@ -6,8 +6,31 @@ import { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Trash2 } from "lucide-react"
 import Link from "next/link"
 import { DeleteDialog } from "./(crud)/delete-dialog"
+import { format } from "date-fns"
 
 export const columns: ColumnDef<Property>[] = [
+  {
+    accessorKey: "updatedAt",
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" className="pl-0 dark:text-white"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Actualizado
+          <ArrowUpDown className="w-4 h-4 ml-1" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const data = row.original     
+      return (
+        <div>
+          <p>{format(data.updatedAt, "YYY-MM-dd")}</p>
+          <p className="pl-2">{format(data.updatedAt, "HH:mm 'hs'")}</p>
+        </div>
+        
+      )
+    },
+  },
   {
     accessorKey: "idPropiedad",
     header: ({ column }) => {
