@@ -58,6 +58,21 @@ export const functions= [
     },    
   },
   {
+    name: "getPropertiesByMultipleURL",
+    description:
+      "Devuelve la información de varias propiedades a partir de varias URLs de propiedades separadas por comas. Ejemplo: ['https://hardoy.com.uy/propiedad/478', 'https://hardoy.com.uy/propiedad/1010', 'https://hardoy.com.uy/propiedad/1054517'].",
+    parameters: {
+      type: "object",
+      properties: {
+        urlArray: {
+          type: "string",
+          description: "URLs de propiedades que el usuario está intentando consultar separadas por comas. Ejemplo: 'https://hardoy.com.uy/propiedad/478,https://hardoy.com.uy/propiedad/1010,https://hardoy.com.uy/propiedad/1054517'.",
+        },
+      },
+      required: ["urlArray"],
+    },    
+  },
+  {
     name: "getPropertyByReference",
     description:
       "Devuelve la información de la propiedad a partir de la referencia de la propiedad. Ejemplos: '478', '1010', '1054517', '2DPPFM', etc. Si la referencia no existe en la base de datos devuelve un mensaje a enviar al usuario.",
@@ -142,6 +157,37 @@ export async function getPropertyByURL(url: string, clientId: string){
   }
 }
 
+export async function getPropertiesByMultipleURL(urls: string, clientId: string){
+  console.log("getPropertiesByMultipleURL")
+  console.log("urls: ", urls)
+  
+  const responseData: PropiedadResult[]= []
+   // urls is coma separated
+  const urlArray= urls.split(",")
+  for (let index = 0; index < urlArray.length; index++) {
+    const url = urlArray[index];
+    const property= await getPropertyFromClientByURL(url, clientId)
+    if (property) {
+      const transformedItem= {
+        url: property.url || "",
+        titulo: property.titulo || "",
+        caracteristicas: property.content || "",
+        distance: 0
+      }
+      responseData.push(transformedItem)
+    } else {
+      console.log("Propiedad no encontrada")
+      responseData.push({
+        url: "",
+        titulo: "",
+        caracteristicas: "Propiedad no encontrada. Por favor responde esto al usuario: No encontré una propiedad con ese link. Te gustaría que te contacte un agente inmobiliario para ayudarte a encontrar la propiedad que estás buscando?",
+        distance: 0
+      })
+    }
+  }
+  return responseData
+}
+
 export async function getPropertyByReference(reference: string, clientId: string){
   console.log("getPropertyByReference")
   const property= await getPropertyFromClientById(reference, clientId)
@@ -196,6 +242,8 @@ export async function runFunction(name: string, args: any, clientId: string) {
       return getPropertyByReference(args["reference"], clientId);
     case "getProyecto":
       return getProyecto(args["nombre"], clientId);
+    case "getPropertiesByMultipleURL":
+      return getPropertiesByMultipleURL(args["urlArray"], clientId);
     default:
       return null;
   }

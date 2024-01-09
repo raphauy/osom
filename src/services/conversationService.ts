@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 import { OpenAI } from "openai";
-import { PropiedadResult, functions, getProperties, getPropertyByReference, getPropertyByURL, getProyecto, notifyHuman } from "./functions";
+import { PropiedadResult, functions, getProperties, getPropertiesByMultipleURL, getPropertyByReference, getPropertyByURL, getProyecto, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { set } from "date-fns";
@@ -262,7 +262,18 @@ export async function processMessage(id: string) {
           distance: parseFloat(item.distance.toFixed(3))
         }
       })
+    }
 
+    if(initialResponse.choices[0].message.function_call.name == "getPropertiesByMultipleURL"){
+      let argumentObj = JSON.parse(initialResponse.choices[0].message.function_call.arguments)      
+      const urlArray= argumentObj.urlArray
+      content = await getPropertiesByMultipleURL(urlArray, conversation.clientId)
+      messages.push(initialResponse.choices[0].message)
+      messages.push({
+        role: "function",
+        name: "getPropertiesByMultipleURL", 
+        content: JSON.stringify(content),
+      })
     }
 
     // second invocation of ChatGPT to respond to the function call
