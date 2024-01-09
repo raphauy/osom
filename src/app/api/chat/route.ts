@@ -1,8 +1,9 @@
-import { getSystemMessage, getSystemMessageForSocialExperiment } from "@/services/conversationService";
+import { getSystemMessage, getSystemMessageForSocialExperiment, messageArrived } from "@/services/conversationService";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { OpenAI } from "openai";
 import { functions, runFunction } from "../../../services/functions";
 import { getClient } from "@/services/clientService";
+import { getCurrentUser } from "@/lib/auth";
 
 // Create an OpenAI API client (that's edge friendly!)
 const openai = new OpenAI({
@@ -49,7 +50,8 @@ export async function POST(req: Request) {
     function_call: "auto",
   })
 
-  //const clientId = "clm865amy0009jepxozqh2ff9"
+  // const currentUser= await getCurrentUser()
+  // const phone= currentUser?.email || "web-chat"
 
   // @ts-ignore
   const stream = OpenAIStream(initialResponse, {
@@ -66,6 +68,23 @@ export async function POST(req: Request) {
         messages: [...messages, ...newMessages],
       });
     },
+    // onStart: async () => {
+    //   console.log("start")
+    //   const text= messages[messages.length - 1].content
+    //   console.log("text: " + text)
+      
+    //   const messageStored= await messageArrived(phone, text, clientId, "user", "")
+    //   if (messageStored) console.log("user message stored")
+
+    // },
+    // onCompletion: async (completion) => {
+    //   console.log("completion: ", completion)
+    //   // check if is text
+    //   if (!completion.includes("function_call")) {
+    //     const messageStored= await messageArrived(phone, completion, clientId, "assistant", "")
+    //     if (messageStored) console.log("assistant message stored")
+    //   }
+    // },
   });
 
 
