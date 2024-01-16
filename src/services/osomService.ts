@@ -42,7 +42,7 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
           rejectUnauthorized: false,
         }),
       });
-      console.log('Success:', response.data);
+      console.log('Whatsapp Success:');
       return
     } catch (error) {
       console.error('Error:', error);

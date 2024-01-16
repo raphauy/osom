@@ -129,11 +129,11 @@ export default function Chat() {
         </div>
       )}
       
-      <div className="fixed bottom-0 flex flex-col items-center w-full p-5 pb-3 space-y-3 bg-gradient-to-b from-transparent via-gray-100 to-gray-100 sm:px-0">
+      <div className="fixed bottom-0 flex flex-col items-center w-full p-5 pb-3 space-y-3 max-w-[350px] sm:max-w-[400px] md:max-w-[550px] lg:max-w-screen-md bg-gradient-to-b from-transparent via-gray-100 to-gray-100 sm:px-0">
         <form
           ref={formRef}
           onSubmit={handleSubmit}
-          className="relative w-full max-w-screen-md px-4 pt-3 pb-2 bg-white border border-gray-200 shadow-lg rounded-xl sm:pb-3 sm:pt-4"
+          className="relative w-full px-4 pt-3 pb-2 bg-white border border-gray-200 shadow-lg rounded-xl sm:pb-3 sm:pt-4"
         >
           <Textarea
             ref={inputRef}

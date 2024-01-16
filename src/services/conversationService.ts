@@ -91,11 +91,11 @@ export async function getConversation(id: string) {
 }
 
 // find an active conversation or create a new one to connect the messages
-export async function messageArrived(phone: string, text: string, clientId: string, role: string, gptData: string) {
+export async function messageArrived(phone: string, text: string, clientId: string, role: string, gptData: string, promptTokens?: number, completionTokens?: number) {
 
   const activeConversation= await getActiveConversation(phone, clientId)
   if (activeConversation) {
-    const message= await createMessage(activeConversation.id, role, text, gptData)
+    const message= await createMessage(activeConversation.id, role, text, gptData, promptTokens, completionTokens)
     return message    
   } else {
     const created= await prisma.conversation.create({
@@ -104,7 +104,7 @@ export async function messageArrived(phone: string, text: string, clientId: stri
         clientId,
       }
     })
-    const message= await createMessage(created.id, role, text, gptData)
+    const message= await createMessage(created.id, role, text, gptData, promptTokens, completionTokens)
     return message   
   }
 }
@@ -137,8 +137,6 @@ export async function processMessage(id: string) {
   if (!conversation.client.prompt) throw new Error("Client not found")
   const messages: ChatCompletionMessageParam[]= getGPTMessages(conversation.messages as ChatCompletionUserOrSystem[], conversation.client.prompt)
 
-  console.log("gptMessages: ", messages)
-
   // check if the conversation requires a function call to be made
   const initialResponse = await openai.chat.completions.create({
     //model: "gpt-3.5-turbo-0613",
@@ -151,9 +149,14 @@ export async function processMessage(id: string) {
   })
 
   let wantsToUseFunction = initialResponse.choices[0].finish_reason == "function_call"
+
   const usage= initialResponse.usage
   console.log("usage:")
   console.log(usage)  
+  let promptTokens= usage ? usage.prompt_tokens : 0
+  let completionTokens= usage ? usage.completion_tokens : 0
+  console.log("promptTokens: ", promptTokens)
+  console.log("completionTokens: ", completionTokens)  
 
   console.log("wantsToUseFunction: ", wantsToUseFunction)
   
@@ -229,7 +232,6 @@ export async function processMessage(id: string) {
 				name: "getPropertyByURL", 
 				content: JSON.stringify(content),
 			})
-      //notificarAgente = true
 		}
 
     if(initialResponse.choices[0].message.function_call.name == "getPropertyByReference"){
@@ -283,6 +285,16 @@ export async function processMessage(id: string) {
       model: "gpt-4-1106-preview",
       messages,
     });
+    const usage= step4response.usage
+    console.log("usage function call:")
+    console.log(usage)
+    if (usage) {
+      promptTokens+= usage.prompt_tokens
+      completionTokens+= usage.completion_tokens
+    }
+    console.log("promptTokens: ", promptTokens)
+    console.log("completionTokens: ", completionTokens)  
+    
     assistantResponse = step4response.choices[0].message.content
     
 	} else {
@@ -293,7 +305,7 @@ export async function processMessage(id: string) {
 
   if (assistantResponse) {
     const gptDataString= JSON.stringify(gptDataArray)
-    await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString)
+    await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
     console.log("message stored")
   }
 
@@ -334,11 +346,10 @@ function getGPTMessages(messages: ChatCompletionUserOrSystem[], clientPrompt: st
 
 export function getSystemMessage(prompt: string): ChatCompletionSystemMessageParam {
   const tecnicalContent= `
-  - Cuando obtentas del usuario el tipo, operación, presupuesto y zona, creas una descripción de la propiedad con las características y utilizas la función 'getProperties'.
+  - Cuando obtengas del usuario el tipo, operación, presupuesto y zona, creas una descripción de la propiedad con las características y utilizas la función 'getProperties'.
   - Si la intención del usuario es hablar con un humano o hablar con un agente inmobiliario o agendar una visita, debes notificar a un agente inmobiliario utilizando la función 'notifyHuman'.  
   `
   const content= prompt + "\n" + tecnicalContent
-  console.log("systemPrompt: ", content)  
 
   const systemMessage: ChatCompletionMessageParam= {
     role: "system",
@@ -367,13 +378,15 @@ export function getSystemMessageForSocialExperiment() {
   
 }
 
-function createMessage(conversationId: string, role: string, content: string, gptData?: string) {
+function createMessage(conversationId: string, role: string, content: string, gptData?: string, promptTokens?: number, completionTokens?: number) {
   const created= prisma.message.create({
     data: {
       role,
       content,
       gptData,
-      conversationId,
+      conversationId,      
+      promptTokens,
+      completionTokens,
     }
   })
 

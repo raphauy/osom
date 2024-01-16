@@ -13,6 +13,8 @@ export type DataMessage = {
     role: string
     content: string
     gptData: string | null
+    promptTokens: number
+    completionTokens: number
 }
 
 export type DataConversation = {
@@ -52,7 +54,9 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
             updatedAt: message.updatedAt,
             role: message.role,
             content: message.content,
-            gptData: message.gptData
+            gptData: message.gptData,
+            promptTokens: message.promptTokens,
+            completionTokens: message.completionTokens,
         })),
         clienteNombre: conversation.client.name,
         clienteSlug: conversation.client.slug,

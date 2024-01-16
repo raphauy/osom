@@ -140,12 +140,14 @@ model Conversation {
 }
 
 model Message {
-  id             String      @id @default(cuid())
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  role           String
-  content        String      @db.Text
-  gptData        String?     @db.Text
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  id                String      @id @default(cuid())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  role              String
+  content           String      @db.Text
+  gptData           String?     @db.Text
+  conversationId    String
+  conversation      Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  promptTokens      Int       @default(0)
+  completionTokens  Int       @default(0)
 }

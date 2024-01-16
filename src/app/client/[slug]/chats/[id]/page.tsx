@@ -3,11 +3,12 @@ import { getDataConversation } from "../actions"
 import clsx from "clsx"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
-import { Bot, User } from "lucide-react"
+import { Bot, CircleDollarSign, User } from "lucide-react"
 import GPTData from "./gpt-data"
 import { getCurrentUser } from "@/lib/auth"
 import { parse } from "path"
 import { formatPresupuesto } from "@/lib/utils"
+import { Separator } from "@/components/ui/separator"
 
 interface Props {
     params: {
@@ -21,6 +22,10 @@ export default async function ChatPage({ params: { id } }: Props) {
 
     const conversation= await getDataConversation(id)
     if (!conversation) return <div>Chat no encontrado</div>
+    const totalPromptTokens= conversation.messages.reduce((acc, message) => acc + message.promptTokens, 0)
+    const totalCompletionTokens= conversation.messages.reduce((acc, message) => acc + message.completionTokens, 0)
+    const promptTokensValue= totalPromptTokens / 1000 * 0.01
+    const completionTokensValue= totalCompletionTokens / 1000 * 0.03
 
     const transformedMessages= conversation.messages.map(message => {
         if (message.content.includes("**")) return message
@@ -34,10 +39,27 @@ export default async function ChatPage({ params: { id } }: Props) {
 
     const similarityThreshold: number= parseFloat(process.env.SIMILARITY_THRESHOLD || "0.5")
 
+    const isAdmin= user?.role === "admin"
+
     return (
         <main className="flex flex-col items-center justify-between w-full p-3 border-l">
           <div className="w-full pb-2 text-center border-b">
             <p className="text-lg font-bold">{conversation.celular} ({conversation.fecha})</p>
+            {
+              totalPromptTokens > 0 && isAdmin && (
+                <div className="flex items-center justify-center gap-2">
+                  <p>Tokens:</p>
+                  <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens)}</p>
+                  <p>+</p>
+                  <p>{Intl.NumberFormat("es-UY").format(totalCompletionTokens)}</p>
+                  <p>=</p>
+                  <p>{Intl.NumberFormat("es-UY").format(totalPromptTokens + totalCompletionTokens)}</p>
+                  <Separator orientation="vertical" className="h-6 mx-1" />
+                  <CircleDollarSign size={18} />
+                  <p>{Intl.NumberFormat("es-UY").format(promptTokensValue + completionTokensValue)} USD</p>
+                </div>                  
+              )
+            }
             {
               conversation.operacion && (
                 <div className="flex items-center justify-center gap-2">Última búsqueda: 
@@ -86,9 +108,18 @@ export default async function ChatPage({ params: { id } }: Props) {
                           {message.content}
                       </ReactMarkdown>
                   </div>
+                  {
+                    message.promptTokens > 0 && isAdmin && (
+                      <div className="grid text-right">
+                        <p>Tokens:</p>
+                        <p>{Intl.NumberFormat("es-UY").format(message.promptTokens)}</p>
+                        <p>{Intl.NumberFormat("es-UY").format(message.completionTokens)}</p>
+                      </div>
+                    )
+                  }
                 </div>
                 {
-                  message.gptData && user?.role === "admin" && (
+                  message.gptData && isAdmin && (
                     <GPTData gptData={message.gptData} similarityThreshold={similarityThreshold} />
                   )
                 }

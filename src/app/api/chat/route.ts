@@ -19,7 +19,6 @@ export async function POST(req: Request) {
   console.log("clientId:" + clientId)
 
   const reqUrl= req.headers.get("referer");
-  console.log("reqUrl: " + reqUrl);
   const isExperimento = reqUrl?.endsWith("experimento")
 
   if (isExperimento) {
@@ -50,8 +49,8 @@ export async function POST(req: Request) {
     function_call: "auto",
   })
 
-  // const currentUser= await getCurrentUser()
-  // const phone= currentUser?.email || "web-chat"
+  const currentUser= await getCurrentUser()
+  const phone= currentUser?.email || "web-chat"
 
   // @ts-ignore
   const stream = OpenAIStream(initialResponse, {
@@ -62,7 +61,6 @@ export async function POST(req: Request) {
       const result = await runFunction(name, args, clientId);
       const newMessages = createFunctionCallMessages(result);
       return openai.chat.completions.create({
-        //model: "gpt-3.5-turbo-0613",
         model: "gpt-4-1106-preview",
         stream: true,
         messages: [...messages, ...newMessages],
@@ -73,16 +71,24 @@ export async function POST(req: Request) {
     //   const text= messages[messages.length - 1].content
     //   console.log("text: " + text)
       
-    //   const messageStored= await messageArrived(phone, text, clientId, "user", "")
-    //   if (messageStored) console.log("user message stored")
+    //   // const messageStored= await messageArrived(phone, text, clientId, "user", "")
+    //   // if (messageStored) console.log("user message stored")
 
+    // },
+    // onToken(token) {
+    //   console.log("token: ", token)
     // },
     // onCompletion: async (completion) => {
     //   console.log("completion: ", completion)
     //   // check if is text
     //   if (!completion.includes("function_call")) {
-    //     const messageStored= await messageArrived(phone, completion, clientId, "assistant", "")
-    //     if (messageStored) console.log("assistant message stored")
+    //     console.log("response:")
+    //     console.log(completion)
+    //     // const messageStored= await messageArrived(phone, completion, clientId, "assistant", "")
+    //     // if (messageStored) console.log("assistant message stored")
+    //   } else {
+    //     console.log("function call")
+    //     console.log(completion)        
     //   }
     // },
   });
