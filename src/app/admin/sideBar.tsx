@@ -1,7 +1,7 @@
 "use client"
 
 import clsx from "clsx";
-import { Briefcase, ChevronRightSquare, FlaskConical, LayoutDashboard, MessageCircle, Settings, User } from "lucide-react";
+import { Briefcase, ChevronRightSquare, FlaskConical, LayoutDashboard, MessageCircle, Receipt, Settings, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -33,6 +33,9 @@ export default function SideBar() {
   const experimentoSelected= path.endsWith("experimento")
   const experimento= clsx(commonClasses, experimentoSelected  && selectedClasses)
 
+  const billingSelected= path.endsWith("billing")
+  const billing= clsx(commonClasses, billingSelected  && selectedClasses)
+
   const configSelected= path.endsWith("config")
   const config= clsx(commonClasses, configSelected  && selectedClasses)
 
@@ -40,7 +43,7 @@ export default function SideBar() {
 
   return (
     <div className="flex flex-col justify-between border-r border-r-osom-color/50">
-      <section className="flex flex-col gap-3 py-4 mt-3 ">
+      <section className="flex flex-col gap-3 py-4 mt-3">
 
         <Link href="/admin" className={dashboard}>
           <LayoutDashboard size={23} />
@@ -81,6 +84,13 @@ export default function SideBar() {
         <Link href="/admin/experimento" className={experimento}>
           <MessageCircle />
           <p className={pClasses}>Experimento</p>                  
+        </Link>
+
+        {divider()}
+
+        <Link href="/admin/billing" className={billing}>
+          <Receipt />
+          <p className={pClasses}>Billing</p>                  
         </Link>
 
         {divider()}

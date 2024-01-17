@@ -9,6 +9,8 @@ import { getCurrentUser } from "@/lib/auth"
 import { parse } from "path"
 import { formatPresupuesto } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
 
 interface Props {
     params: {
@@ -40,6 +42,7 @@ export default async function ChatPage({ params: { id } }: Props) {
     const similarityThreshold: number= parseFloat(process.env.SIMILARITY_THRESHOLD || "0.5")
 
     const isAdmin= user?.role === "admin"
+    console.log(format(new Date(), "MM-dd HH:mm:ss", {locale: es}), user?.name)    
 
     return (
         <main className="flex flex-col items-center justify-between w-full p-3 border-l">

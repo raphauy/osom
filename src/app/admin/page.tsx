@@ -4,13 +4,19 @@ import getUsers from "@/services/userService";
 import { Briefcase, User } from "lucide-react";
 import Link from "next/link";
 import { getDataClients } from "./clients/(crud)/actions";
+import { getCurrentUser } from "@/lib/auth";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 export default async function AdminPage() {
 
   const users= await getUsers()
   const clients= await getClients()
   const dataClients= await getDataClients()
-  
+
+  const user= await getCurrentUser()
+  console.log(format(new Date(), "MM-dd HH:mm:ss", {locale: es}), user?.name, "(admin page)")    
+
   return (
     <div className="flex flex-col">
       <p className="mt-10 mb-5 text-3xl font-bold text-center">Admin Dashboard</p>

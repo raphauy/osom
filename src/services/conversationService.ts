@@ -4,7 +4,8 @@ import { OpenAI } from "openai";
 import { PropiedadResult, functions, getProperties, getPropertiesByMultipleURL, getPropertyByReference, getPropertyByURL, getProyecto, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
-import { set } from "date-fns";
+import { format, set } from "date-fns";
+import { BillingData, CompleteData } from "@/app/admin/billing/actions";
 
 
 const openai = new OpenAI({
@@ -468,4 +469,84 @@ export async function deleteConversation(id: string) {
   })
 
   return deleted
+}
+
+const PROMPT_TOKEN_PRICE = 0.01
+const COMPLETION_TOKEN_PRICE = 0.03
+
+export async function getBillingData(from: Date, to: Date, clientId?: string): Promise<CompleteData> {  
+  console.log("from: ", format(from, "yyyy-MM-dd HH:mm:ss"))
+  console.log("to: ", format(to, "yyyy-MM-dd HH:mm:ss"))
+  console.log("clientId: ", clientId)
+
+  const messages= await prisma.message.findMany({
+    where: {
+      createdAt: {
+        gte: from,
+        lte: to
+      },
+      conversation: {
+        clientId: clientId
+      }
+    },
+    include: {
+      conversation: {
+        include: {
+          client: true
+        }
+      }
+    }
+  })
+
+  const billingData: BillingData[]= []
+
+  const clientMap: {[key: string]: BillingData}= {}
+
+  for (const message of messages) {    
+    const clientName= message.conversation.client.name
+    const promptTokens= message.promptTokens ? message.promptTokens : 0
+    const promptTokensCost= promptTokens / 1000 * PROMPT_TOKEN_PRICE
+    const completionTokens= message.completionTokens ? message.completionTokens : 0
+    const completionTokensCost= completionTokens / 1000 * COMPLETION_TOKEN_PRICE
+
+    if (!clientMap[clientName]) {
+      clientMap[clientName]= {
+        clientName,
+        promptTokens,
+        promptTokensCost,
+        completionTokens,
+        completionTokensCost
+      }
+    } else {
+      clientMap[clientName].promptTokens+= promptTokens
+      clientMap[clientName].promptTokensCost+= promptTokensCost
+      clientMap[clientName].completionTokens+= completionTokens
+      clientMap[clientName].completionTokensCost+= completionTokensCost
+    }
+  }
+
+  console.log("clientMap: ", clientMap)  
+
+  let totalCost= 0
+
+  for (const key in clientMap) {
+    billingData.push(clientMap[key])
+    totalCost+= clientMap[key].promptTokensCost + clientMap[key].completionTokensCost
+  }
+
+  console.log("billingData: ", billingData)
+
+  // sort billingData by promptTokens
+  billingData.sort((a, b) => {
+    return b.promptTokens - a.promptTokens
+  })
+
+  const res: CompleteData= {
+    totalCost,
+    pricePerPromptToken: PROMPT_TOKEN_PRICE,
+    pricePerCompletionToken: COMPLETION_TOKEN_PRICE,
+    billingData
+  }
+  
+  return res
 }

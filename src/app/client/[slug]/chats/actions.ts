@@ -38,7 +38,6 @@ export async function getDataConversation(conversationId: string): Promise<DataC
     if (!conversation) return null
 
     const data= getData(conversation)
-    console.log("fecha: " + conversation.createdAt);
     
     return data
 }
