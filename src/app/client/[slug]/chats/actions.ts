@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache"
 import { Client, Conversation, Message } from "@prisma/client"
 import { deleteConversation, getConversation, getConversationsOfClient } from "@/services/conversationService"
 import { format } from "date-fns"
-import { utcToZonedTime } from "date-fns-tz"
+
 
 export type DataMessage = {
     id: string
@@ -44,12 +44,12 @@ export async function getDataConversation(conversationId: string): Promise<DataC
 function getData(conversation: Conversation & { messages: Message[], client: Client }): DataConversation {
     const data: DataConversation= {
         id: conversation.id,
-        fecha: getFormat(utcToZonedTime(conversation.createdAt, 'America/Montevideo')),
-        updatedAt: getFormat(utcToZonedTime(conversation.updatedAt, 'America/Montevideo')),
+        fecha: getFormat(conversation.createdAt),
+        updatedAt: getFormat(conversation.updatedAt),
         celular: conversation.phone,
         messages: conversation.messages.map((message: Message) => ({
             id: message.id,
-            fecha: getFormat(utcToZonedTime(message.createdAt, 'America/Montevideo')),
+            fecha: getFormat(message.createdAt),
             updatedAt: message.updatedAt,
             role: message.role,
             content: message.content,
@@ -70,7 +70,7 @@ function getData(conversation: Conversation & { messages: Message[], client: Cli
 
 function getFormat(date: Date): string {
     // if date is today return only the time
-    const today= utcToZonedTime(new Date(), 'America/Montevideo')
+    const today= new Date()
     if (date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear()) {
         return format(date, "HH:mm")
     } else {
