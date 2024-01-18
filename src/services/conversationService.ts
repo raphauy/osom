@@ -475,9 +475,6 @@ const PROMPT_TOKEN_PRICE = 0.01
 const COMPLETION_TOKEN_PRICE = 0.03
 
 export async function getBillingData(from: Date, to: Date, clientId?: string): Promise<CompleteData> {  
-  console.log("from: ", format(from, "yyyy-MM-dd HH:mm:ss"))
-  console.log("to: ", format(to, "yyyy-MM-dd HH:mm:ss"))
-  console.log("clientId: ", clientId)
 
   const messages= await prisma.message.findMany({
     where: {
@@ -520,8 +517,6 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
       clientMap[clientName].completionTokens+= completionTokens
     }
   }
-
-  console.log("clientMap: ", clientMap)  
 
   let totalCost= 0
 
