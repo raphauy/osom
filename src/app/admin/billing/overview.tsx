@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { CompleteData } from "./actions"
 
 const dataOld = [
@@ -59,15 +59,19 @@ type Props = {
 }
 export function Overview({ billingData }: Props) {
 
-    const data: { name: string; total: number }[] = []
+    const data: { name: string; Compra: number; Venta: number }[] = []
 
     billingData?.billingData.map((item) => {
           const totalPromptCost = (item.promptTokens / 1000) * billingData.pricePerPromptToken
           const totalCompletionCost = (item.completionTokens / 1000) * billingData.pricePerCompletionToken
-          const totalCost = totalPromptCost + totalCompletionCost
+          const totalCost = Math.round((totalPromptCost + totalCompletionCost) * 100) / 100
+          const totalPromptSell = (item.promptTokens / 1000) * item.clientPricePerPromptToken
+          const totalCompletionSell = (item.completionTokens / 1000) * item.clientPricePerCompletionToken
+          const totalSell = Math.round((totalPromptSell + totalCompletionSell) * 100) / 100
           const clientData = {
             name: item.clientName,
-            total: totalCost
+            Compra: totalCost,
+            Venta: totalSell,
         }
         data.push(clientData)
     })
@@ -88,11 +92,17 @@ export function Overview({ billingData }: Props) {
           axisLine={false}
           tickFormatter={(value) => `$${value}`}
         />
+        <Tooltip />
+        <Legend />
         <Bar
-          dataKey="total"
-          fill="currentColor"
+          dataKey="Compra"
+          fill="#8884d8"
           radius={[4, 4, 0, 0]}
-          className="fill-primary"
+        />
+        <Bar
+          dataKey="Venta"
+          fill="#82ca9d"
+          radius={[4, 4, 0, 0]}
         />
       </BarChart>
     </ResponsiveContainer>

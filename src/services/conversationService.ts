@@ -525,8 +525,6 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
     totalCost+= (clientMap[key].promptTokens / 1000 * PROMPT_TOKEN_PRICE) + (clientMap[key].completionTokens / 1000 * COMPLETION_TOKEN_PRICE)
   }
 
-  console.log("billingData: ", billingData)
-
   // sort billingData by promptTokens
   billingData.sort((a, b) => {
     return b.promptTokens - a.promptTokens
