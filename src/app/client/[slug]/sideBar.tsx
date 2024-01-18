@@ -24,6 +24,9 @@ export default function SideBar({ slug }: Props) {
   const chatsSelected= path.includes("chats")
   const chats= clsx(commonClasses, chatsSelected  && selectedClasses)
 
+  const billingSelected= path.includes("billing")
+  const billing= clsx(commonClasses, billingSelected  && selectedClasses)
+
   const usersSelected= path.endsWith("users")
   const users= clsx(commonClasses, usersSelected  && selectedClasses)
 
@@ -52,6 +55,12 @@ export default function SideBar({ slug }: Props) {
 
         {divider()}
 
+        <Link href={`/client/${slug}/billing`} className={billing}>
+          <MessageCircle />
+          <p className={pClasses}>Costos por uso</p>
+        </Link>
+
+        {divider()}
         <Link href={`/client/${slug}/users`} className={users}>
           <User size={23} />
           <p className={pClasses}>Usuarios</p>                  

@@ -60,20 +60,22 @@ model VerificationToken {
 }
 
 model Client {
-  id                String   @id @default(cuid())
-  name              String
-  description       String?
-  url               String?
-  slug              String    @unique
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  users             User[]
-  properties        Property[]
-  conversations     Conversation[]
-  whatsappEndpoint  String?
-  budgetPercMin     Int?      @default(20)
-  budgetPercMax     Int?      @default(20)
-  prompt            String?   @db.Text
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  url                   String?
+  slug                  String    @unique
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  users                 User[]
+  properties            Property[]
+  conversations         Conversation[]
+  whatsappEndpoint      String?
+  budgetPercMin         Int?      @default(20)
+  budgetPercMax         Int?      @default(20)
+  prompt                String?   @db.Text
+  promptTokensPrice     Float      @default(0)
+  completionTokensPrice Float  @default(0)
 }
 
 model Property {

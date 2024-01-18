@@ -22,6 +22,8 @@ export type DataClient = {
     budgetPercMin?: number | null
     budgetPercMax?: number | null
     prompt?: string | null
+    promptTokensPrice?: number | null
+    completionTokensPrice?: number | null
   }
     
 
@@ -41,7 +43,9 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         whatsAppEndpoint: client.whatsappEndpoint,
         budgetPercMin: client.budgetPercMin || 20,
         budgetPercMax: client.budgetPercMax || 20,
-        prompt: client.prompt
+        prompt: client.prompt,
+        promptTokensPrice: client.promptTokensPrice,
+        completionTokensPrice: client.completionTokensPrice
     }
     return data
 }
@@ -65,7 +69,9 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         whatsAppEndpoint: client.whatsappEndpoint,
         budgetPercMin: client.budgetPercMin || 20,
         budgetPercMax: client.budgetPercMax || 20,    
-        prompt: client.prompt
+        prompt: client.prompt,
+        promptTokensPrice: client.promptTokensPrice,
+        completionTokensPrice: client.completionTokensPrice
     }
     return data
 }
@@ -87,7 +93,9 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         whatsAppEndpoint: client.whatsappEndpoint,
         budgetPercMin: client.budgetPercMin || 20,
         budgetPercMax: client.budgetPercMax || 20,
-        prompt: client.prompt
+        prompt: client.prompt,
+        promptTokensPrice: client.promptTokensPrice,
+        completionTokensPrice: client.completionTokensPrice
     }
     return data
 }
@@ -117,7 +125,9 @@ export async function getDataClients() {
                 whatsAppEndpoint: client.whatsappEndpoint,
                 budgetPercMin: client.budgetPercMin || 20,
                 budgetPercMax: client.budgetPercMax || 20,
-                prompt: client.prompt
+                prompt: client.prompt,
+                promptTokensPrice: client.promptTokensPrice,
+                completionTokensPrice: client.completionTokensPrice
             };
         })
     );

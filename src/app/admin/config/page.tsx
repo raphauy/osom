@@ -12,10 +12,10 @@ type Props = {
 export default async function ConfigPage({ searchParams }: Props) {
 
     const clientId= searchParams.clientId
-    console.log("clientId", clientId)    
 
     const clients= await getDataClients()
     const client= clients.find((client) => client.id === clientId)
+    console.log(client)    
     const selectors: SelectorData[]= clients.map((client) => ({ slug: client.id, name: client.nombre }))
 
     const API_TOKEN= process.env.API_TOKEN || "No configurado"

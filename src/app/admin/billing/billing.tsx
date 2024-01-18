@@ -6,16 +6,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
-import { CalendarClock, ChevronLeft, ChevronRight, Loader, Search, Sigma } from "lucide-react"
+import { ArrowDownCircle, ArrowUpCircle, CalendarClock, ChevronLeft, ChevronRight, Disc, Loader, PercentCircle, Search, Sigma } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { BillingData, CompleteData, getBillingDataAction } from "./actions"
 import { toast } from "@/components/ui/use-toast"
 import { Progress } from "@/components/ui/progress"
 import { Overview } from "./overview"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import TokensCard from "./tokens-card"
+import ValueCard from "./value-card"
+import ValueClientCard from "./value-client-card"
+import { cn } from "@/lib/utils"
 
+type Props = {
+  clientId?: string
+}
 
-export function Billing() {
+export function Billing({ clientId }: Props) {
 
   const [loading, setLoading] = useState(false)
 
@@ -48,6 +55,7 @@ export function Billing() {
     setFrom(firstDay)
     setTo(lastDay)
     search(firstDay, lastDay)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function upMonth() {
@@ -78,7 +86,7 @@ export function Billing() {
     to.setMinutes(59)
     to.setSeconds(59)
     to.setMilliseconds(999)
-    getBillingDataAction(from, to)
+    getBillingDataAction(from, to, clientId)
     .then((data) => {
       console.log(data)
       setData(data)
@@ -162,17 +170,20 @@ export function Billing() {
           ) : 
 
           <div>
-            {/* <Overview billingData={data} /> */}
-            <Accordion type="single" collapsible>
-              <AccordionItem value="overview">
-                <AccordionTrigger>Gráfico</AccordionTrigger>
-                <AccordionContent>
-                  <Overview billingData={data} />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            {
+              !clientId && (
+                <Accordion type="single" collapsible>
+                  <AccordionItem value="overview">
+                    <AccordionTrigger>Gráfico</AccordionTrigger>
+                    <AccordionContent>
+                      <Overview billingData={data} />
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>  
+              )
+            }
 
-            <BillingCard data={data} />
+            <BillingCard data={data} adminPanel={clientId ? false : true} />
 
           </div>
             
@@ -184,81 +195,69 @@ export function Billing() {
 }
 
 
-
-function BillingCard({ data }: { data: CompleteData | undefined }) {
+type BillingCardProps = {
+  data: CompleteData | undefined
+  adminPanel?: boolean
+}
+function BillingCard({ data, adminPanel }: BillingCardProps) {
   return data?.billingData.map((item) => {
 
-    const totalCost = item.promptTokensCost + item.completionTokensCost
+    const totalPromptCost = (item.promptTokens / 1000) * data.pricePerPromptToken
+    const totalCompletionCost = (item.completionTokens / 1000) * data.pricePerCompletionToken
+    const totalCost = totalPromptCost + totalCompletionCost
+
+    const totalPromptSell = (item.promptTokens / 1000) * item.clientPricePerPromptToken
+    const totalCompletionSell = (item.completionTokens / 1000) * item.clientPricePerCompletionToken
+
     const percentage= data.totalCost ? totalCost / data.totalCost * 100 : 0
 
 
     return (
-      <div key={item.clientName} className="grid gap-6 md:grid-cols-3">
-        <p className="col-span-3 mt-5 text-3xl font-bold text-center">{item.clientName}</p>
-        <Card className="flex flex-col">
-          <CardHeader>
-            <CardDescription>
-              <div className="flex justify-between">
-                <p>Prompt Tokens</p>
-                <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(data.pricePerPromptToken)}</p>
-              </div>
-            </CardDescription>
-            <CardTitle>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(item.promptTokensCost)}</p>                        
-                <p>{Intl.NumberFormat("es-UY").format(item.promptTokens)}</p>
-              </div>                      
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardTitle className="text-right">
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(item.completionTokensCost)}</p>                        
-                <p>{Intl.NumberFormat("es-UY").format(item.completionTokens)}</p>                        
-              </div>
-            </CardTitle>
-            <CardDescription>
-              <div className="flex justify-between">
-                <p>Completion Tokens</p>
-                <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(data.pricePerCompletionToken)}</p>
-              </div>
-            </CardDescription>
-          </CardContent>
-        </Card>
-        <Card className="flex flex-col">
-          <CardHeader className="mt-8">
-            <CardDescription>
-              <div className="flex justify-between">
-                <p>Total Tokens</p>
-                <p>Total Cost</p>
-              </div>
-            </CardDescription>
-            <CardTitle>
-              <div className="flex items-center justify-between">
-                <p>{Intl.NumberFormat("es-UY").format(item.promptTokens + item.completionTokens)}</p>
-                <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(totalCost)}</p>
-              </div>
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="flex flex-col justify-between">
-          <CardHeader>
-            <CardDescription>Porcentaje de uso</CardDescription>
-            <CardTitle>
-              <div className="flex items-center justify-between">
-                <p>{percentage.toFixed(1)}%</p>
-                <Sigma />
-              </div>                    
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between text-muted-foreground">
-              <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(totalCost)}</p>
-              <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(data.totalCost)}</p>
-            </div>
-            <Progress value={percentage} indicatorColor="bg-blue-500" className="h-2" />
-          </CardContent>                  
-        </Card>
+      <div key={item.clientName} className="grid gap-6 mt-5 mb-24 md:grid-cols-2">
+        <p className="col-span-2 mt-5 text-3xl font-bold text-center">{item.clientName}</p>
+
+        {/** Total tokens */}
+        <TokensCard promptTokens={item.promptTokens} completionTokens={item.completionTokens} />
+        
+        {/** Porcentaje */}
+        {
+          adminPanel ? (
+            <>
+              <Card className={cn("flex flex-col justify-between", totalCost === 0 && "opacity-20")}>
+                <CardHeader>
+                  <CardDescription>
+                    <div className="flex justify-between">
+                      <p>Utilización en el período</p>
+                      <PercentCircle />
+                    </div>
+                  </CardDescription>
+                  <CardTitle>
+                    <div className="flex items-center justify-between">
+                      <p>{percentage.toFixed(1)}%</p>
+                    </div>                    
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between text-muted-foreground">
+                    <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(totalCost)}</p>
+                    <p>{Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(data.totalCost)}</p>
+                  </div>
+                  <Progress value={percentage} indicatorColor="bg-blue-500" className="h-2" />
+                </CardContent>                  
+              </Card>  
+
+              {/** Total Compra */}
+              <ValueCard  promptPrice={data.pricePerPromptToken} completionPrice={data.pricePerCompletionToken} promptCost={totalPromptCost} completionCost={totalCompletionCost} costIcon={true} />
+
+              {/** Total Venta */}
+              <ValueCard promptPrice={item.clientPricePerPromptToken} completionPrice={item.clientPricePerCompletionToken} promptCost={totalPromptSell} completionCost={totalCompletionSell} costIcon={false} />
+            </>
+          ) : (
+            <ValueClientCard promptPrice={item.clientPricePerPromptToken} completionPrice={item.clientPricePerCompletionToken} promptCost={totalPromptSell} completionCost={totalCompletionSell} />
+          )
+        }
+
+
       </div>            
     )}          
   )           

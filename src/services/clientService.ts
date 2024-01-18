@@ -132,3 +132,19 @@ export async function setBudgetPercentage(clientId: string, budgetPercMin: numbe
 
   return client   
 }
+
+export async function setTokensPrice(clientId: string, promptTokensPrice: number, completionTokensPrice: number) {
+  console.log(clientId, promptTokensPrice, completionTokensPrice)
+  
+  const client= await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      promptTokensPrice,
+      completionTokensPrice
+    }
+  })
+
+  return client   
+}

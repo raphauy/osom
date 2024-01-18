@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Client" ALTER COLUMN "completionTokensPrice" SET DEFAULT 0,
+ALTER COLUMN "completionTokensPrice" SET DATA TYPE DOUBLE PRECISION,
+ALTER COLUMN "promptTokensPrice" SET DEFAULT 0,
+ALTER COLUMN "promptTokensPrice" SET DATA TYPE DOUBLE PRECISION;

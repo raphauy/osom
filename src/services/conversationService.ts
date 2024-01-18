@@ -505,23 +505,19 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
   for (const message of messages) {    
     const clientName= message.conversation.client.name
     const promptTokens= message.promptTokens ? message.promptTokens : 0
-    const promptTokensCost= promptTokens / 1000 * PROMPT_TOKEN_PRICE
     const completionTokens= message.completionTokens ? message.completionTokens : 0
-    const completionTokensCost= completionTokens / 1000 * COMPLETION_TOKEN_PRICE
 
     if (!clientMap[clientName]) {
       clientMap[clientName]= {
         clientName,
         promptTokens,
-        promptTokensCost,
         completionTokens,
-        completionTokensCost
+        clientPricePerPromptToken: message.conversation.client.promptTokensPrice,
+        clientPricePerCompletionToken: message.conversation.client.completionTokensPrice,
       }
     } else {
       clientMap[clientName].promptTokens+= promptTokens
-      clientMap[clientName].promptTokensCost+= promptTokensCost
       clientMap[clientName].completionTokens+= completionTokens
-      clientMap[clientName].completionTokensCost+= completionTokensCost
     }
   }
 
@@ -531,7 +527,7 @@ export async function getBillingData(from: Date, to: Date, clientId?: string): P
 
   for (const key in clientMap) {
     billingData.push(clientMap[key])
-    totalCost+= clientMap[key].promptTokensCost + clientMap[key].completionTokensCost
+    totalCost+= (clientMap[key].promptTokens / 1000 * PROMPT_TOKEN_PRICE) + (clientMap[key].completionTokens / 1000 * COMPLETION_TOKEN_PRICE)
   }
 
   console.log("billingData: ", billingData)
