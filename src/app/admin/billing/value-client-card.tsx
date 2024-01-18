@@ -1,4 +1,5 @@
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { ArrowDownCircle, ArrowUpCircle, CircleDollarSign } from "lucide-react";
 
 type Props = {
@@ -11,7 +12,7 @@ type Props = {
 export default function ValueClientCard({ promptPrice, completionPrice, promptCost, completionCost }: Props) {
     const totalCost = promptCost + completionCost
   return (
-    <Card className="flex flex-col">
+    <Card className={cn("flex flex-col", totalCost === 0 && "opacity-20")}>
         <CardHeader>
         <CardDescription>
             <div className="flex justify-between">
