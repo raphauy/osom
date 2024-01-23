@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache"
 import { Client, Conversation, Message } from "@prisma/client"
-import { deleteConversation, getConversation, getConversationsOfClient } from "@/services/conversationService"
+import { deleteConversation, getConversation, getConversationsOfClient, getLastConversation } from "@/services/conversationService"
 import { format } from "date-fns"
 
 
@@ -33,7 +33,7 @@ export type DataConversation = {
 }
       
 
-export async function getDataConversation(conversationId: string): Promise<DataConversation | null>{
+export async function getDataConversationAction(conversationId: string): Promise<DataConversation | null>{
     const conversation= await getConversation(conversationId)
     if (!conversation) return null
 
@@ -41,6 +41,16 @@ export async function getDataConversation(conversationId: string): Promise<DataC
     
     return data
 }
+
+export async function getLastDataConversationAction(slug: string): Promise<DataConversation | null>{
+    const conversation= await getLastConversation(slug)
+    if (!conversation) return null
+
+    const data= getData(conversation)
+    
+    return data
+}
+
 function getData(conversation: Conversation & { messages: Message[], client: Client }): DataConversation {
     const data: DataConversation= {
         id: conversation.id,

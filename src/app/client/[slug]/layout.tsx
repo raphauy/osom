@@ -12,7 +12,7 @@ interface Props {
   }
 }
 
-export default async function AdminLayout({ children, params }: Props) {
+export default async function SlugLayout({ children, params }: Props) {
   const currentUser = await getCurrentUser()
   const slug = params.slug
 

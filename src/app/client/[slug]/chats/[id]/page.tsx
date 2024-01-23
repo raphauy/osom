@@ -1,16 +1,16 @@
 import { getClientBySlug } from "@/services/clientService"
-import { getDataConversation } from "../actions"
 import clsx from "clsx"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { Bot, CircleDollarSign, User } from "lucide-react"
-import GPTData from "./gpt-data"
+import GPTData from "../gpt-data"
 import { getCurrentUser } from "@/lib/auth"
 import { parse } from "path"
 import { formatPresupuesto } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
+import { getDataConversationAction } from "../actions"
 
 interface Props {
     params: {
@@ -22,7 +22,7 @@ export default async function ChatPage({ params: { id } }: Props) {
 
     const user= await getCurrentUser()
 
-    const conversation= await getDataConversation(id)
+    const conversation= await getDataConversationAction(id)
     if (!conversation) return <div>Chat no encontrado</div>
     const totalPromptTokens= conversation.messages.reduce((acc, message) => acc + message.promptTokens, 0)
     const totalCompletionTokens= conversation.messages.reduce((acc, message) => acc + message.completionTokens, 0)

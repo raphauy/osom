@@ -31,6 +31,7 @@ interface RootLayoutProps {
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   const session= await getSession()
+  
   return (
     <>
       <html lang="en" suppressHydrationWarning>

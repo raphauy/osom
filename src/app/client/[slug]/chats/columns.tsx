@@ -33,11 +33,11 @@ export const columns: ColumnDef<DataConversation>[] = [
     )
     },
     cell: ({ row }) => {
-      const data= row.original     
+      const data= row.original
  
       return (
         <div className="flex items-center justify-start flex-1">
-          <Link href={`/client/${data.clienteSlug}/chats/${data.id}`}>
+          <Link href={`/client/${data.clienteSlug}/chats?id=${data.id}`}>
               <Button variant="link" className="pl-0 dark:text-white">
                 {data.celular}
               </Button>

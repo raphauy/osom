@@ -27,12 +27,14 @@ export default async function getConversations() {
   return found;
 }
 
+// if clientId = "ALL" then return all conversations
 export async function getConversationsOfClient(clientId: string) {
+  const where= clientId === "ALL" ? {} : {
+    clientId
+  }
 
   const found = await prisma.conversation.findMany({
-    where: {
-      clientId
-    },
+    where,
     orderBy: {
       createdAt: 'desc',
     },
@@ -41,6 +43,19 @@ export async function getConversationsOfClient(clientId: string) {
       messages: true
     }
   })
+
+  // const found = await prisma.conversation.findMany({
+  //   where: {
+  //     clientId
+  //   },
+  //   orderBy: {
+  //     createdAt: 'desc',
+  //   },
+  //   include: {
+  //     client: true,
+  //     messages: true
+  //   }
+  // })
 
   return found;
 }
@@ -89,6 +104,30 @@ export async function getConversation(id: string) {
   })
 
   return found
+}
+
+export async function getLastConversation(slug: string) {
+    
+    const found = await prisma.conversation.findFirst({
+      where: {
+        client: {
+          slug
+        }
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      include: {
+        client: true,
+        messages:  {
+          orderBy: {
+            createdAt: 'asc',
+          },
+        }
+      },
+    })
+  
+    return found  
 }
 
 // find an active conversation or create a new one to connect the messages
