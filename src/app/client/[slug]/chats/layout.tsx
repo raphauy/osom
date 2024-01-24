@@ -9,11 +9,9 @@ interface Props {
 }
 
 export default async function ChatLayout({ children, params }: Props) {
-  console.log("ChatLayout");
 
   let client= null
   if (!params.slug) return <div>Cliente no encontrado</div>
-  console.log("params.slug: " + params.slug)      
   
   const currentUser = await getCurrentUser()
 
