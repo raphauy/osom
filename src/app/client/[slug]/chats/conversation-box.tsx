@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm"
 import { Bot, CircleDollarSign, User } from "lucide-react"
 import { getCurrentUser } from "@/lib/auth"
 import { parse } from "path"
-import { formatPresupuesto } from "@/lib/utils"
+import { cn, formatPresupuesto } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
@@ -89,7 +89,7 @@ export default function ConversationBox({ conversation, isAdmin, similarityThres
                     <p className="text-sm">{message.fecha}</p>
                   </div>
                   <ReactMarkdown
-                        className="w-full prose break-words prose-p:leading-relaxed"
+                        className={cn("w-full prose break-words prose-p:leading-relaxed", message.role === "user" && "whitespace-pre-line")}
                         remarkPlugins={[remarkGfm]}
                         components={{
                         // open links in new tab

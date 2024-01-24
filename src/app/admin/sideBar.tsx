@@ -1,5 +1,6 @@
 "use client"
 
+import { cn } from "@/lib/utils";
 import clsx from "clsx";
 import { Briefcase, ChevronRightSquare, FlaskConical, LayoutDashboard, MessageCircle, Receipt, Settings, User } from "lucide-react";
 import Link from "next/link";
@@ -38,6 +39,9 @@ export default function SideBar() {
 
   const configSelected= path.endsWith("config")
   const config= clsx(commonClasses, configSelected  && selectedClasses)
+
+  const configsSelected= path.endsWith("configs")
+  const configs= clsx(commonClasses, configsSelected  && selectedClasses)
 
   const pClasses= "hidden sm:block lg:w-36"
 
@@ -102,7 +106,11 @@ export default function SideBar() {
         
         <Link href="/admin/config" className={config}>
           <Settings />
-          <p className={pClasses}>Config</p>                  
+          <p className={pClasses}>Config. Cliente</p>                  
+        </Link>
+        <Link href="/admin/configs" className={configs}>
+          <Settings />
+          <p className={pClasses}>Config. General</p>                  
         </Link>
       </section>
     </div>
