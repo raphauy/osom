@@ -35,8 +35,8 @@ export default function ValueClientCard({ promptPrice, completionPrice, promptCo
         </CardTitle>
         <CardDescription>
             <div className="flex justify-between">
-            <p>Prompt ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(promptPrice)})</p>
-            <p>Completion ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD" }).format(completionPrice)})</p>
+            <p>Prompt ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 3, maximumFractionDigits:3 }).format(promptPrice)})</p>
+            <p>Completion ({Intl.NumberFormat("es-UY", { style: "currency", currency: "USD", minimumFractionDigits: 3, maximumFractionDigits:3 }).format(completionPrice)})</p>
             </div>
         </CardDescription>
         </CardHeader>
