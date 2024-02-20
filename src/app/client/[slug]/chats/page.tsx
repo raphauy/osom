@@ -28,9 +28,10 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
   const [conversation, setConversation] = useState<DataConversation>()
   const [dataConversations, setDataConversations] = useState<DataConversation[]>([])
 
-  const [firstLoad, setFirstLoad] = useState(true)
+  const [clientId, setClientId] = useState<string | undefined>("")
 
   useEffect(() => {
+
     setLoadingChat(true)
 
     if (!id) {
@@ -38,41 +39,42 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
   
       getLastDataConversationAction(slug)
       .then(conversation => {
-        if (conversation) setConversation(conversation)
+        if (conversation) {
+          setConversation(conversation)
+          setClientId(conversation.clienteId)
+        }
       })    
       .catch(error => console.log(error))
       .finally(() => setLoadingChat(false))
     } else {
       getDataConversationAction(id)
       .then(conversation => {
-        if (conversation) setConversation(conversation)
+        if (conversation) {
+          setConversation(conversation)
+          setClientId(conversation.clienteId)
+        }
+        
       })
       .catch(error => console.log(error))
       .finally(() => setLoadingChat(false))
     }
 
-    
-
   }, [id, slug])
   
 
   useEffect(() => {
-
-    if (firstLoad) {
-      setFirstLoad(false)
-      return
-    }
+    if (!clientId) return
 
     setLoadingConversations(true)
 
-    getDataConversationsBySlugAction(slug)
+    getDataConversations(clientId)
     .then(conversations => {
       setDataConversations(conversations)
     })
     .catch(error => console.log(error))
     .finally(() => setLoadingConversations(false))
     
-  }, [slug, firstLoad])
+  }, [clientId])
   
 
 
