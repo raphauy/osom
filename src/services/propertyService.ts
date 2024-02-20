@@ -1,12 +1,13 @@
 import { Percentages } from "@/app/admin/clients/(crud)/actions";
 import { prisma } from "@/lib/db";
 import { Property } from "@prisma/client";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
-import { PromptTemplate } from "langchain/prompts";
 import { LLMChain } from "langchain/chains";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import { OpenAI } from "langchain/llms/openai";
+import { PromptTemplate } from "langchain/prompts";
 import pgvector from 'pgvector/utils';
 import { getClient } from "./clientService";
+import { getIdFromUrl } from "./url-service";
 
 export default async function getPropertys() {
 
@@ -125,14 +126,27 @@ export async function deleteAllPropertiesOfClient(clientId: string): Promise<boo
 
 export async function getPropertyFromClientByURL(url: string, clientId: string) {
   
-    const found = await prisma.property.findFirst({
-      where: {
-        clientId,
-        url,
-      },
-    })
-  
+  let found = await prisma.property.findFirst({
+    where: {
+      clientId,
+      url,
+    },
+  })
+
+  if (found)  
     return found
+
+  const idPropiedad= await getIdFromUrl(url)
+  if (!idPropiedad) return null
+
+  found = await prisma.property.findFirst({
+    where: {
+      clientId,
+      idPropiedad,
+    },
+  })
+
+  return found
 }
 
 export async function getPropertyFromClientById(idPropiedad: string, clientId: string) {
