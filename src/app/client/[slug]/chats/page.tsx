@@ -83,12 +83,11 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
 
   const isAdmin= user?.role === "admin"
 
-  if (!client) 
-    return <Loader className="w-6 h-6 mx-auto animate-spin" />
+  // if (!client) 
+  //   return <Loader className="w-6 h-6 mx-auto animate-spin" />
 
   return (
     <div className="flex flex-grow w-full">
-
       <div className="w-72">
 
         {
