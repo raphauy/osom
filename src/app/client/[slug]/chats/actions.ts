@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { Client, Conversation, Message } from "@prisma/client"
 import { deleteConversation, getConversation, getConversationsOfClient, getLastConversation } from "@/services/conversationService"
 import { format } from "date-fns"
+import { getClientBySlug } from "@/services/clientService"
 
 
 export type DataMessage = {
@@ -90,6 +91,19 @@ function getFormat(date: Date): string {
 
 export async function getDataConversations(clientId: string) {
     const conversations= await getConversationsOfClient(clientId)
+
+    const data: DataConversation[]= conversations.map(conversation => getData(conversation))
+    
+    return data    
+}
+
+export async function getDataConversationsBySlugAction(slug: string) {
+    const client= await getClientBySlug(slug)
+    if (!client) {
+        console.log("Client not found by slug: ", slug)        
+        return []
+    }
+    const conversations= await getConversationsOfClient(client.id)
 
     const data: DataConversation[]= conversations.map(conversation => getData(conversation))
     

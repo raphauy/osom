@@ -4,7 +4,7 @@ import { DataClient, getDataClientBySlug } from "@/app/admin/clients/(crud)/acti
 import { Loader } from "lucide-react"
 import { useSession } from "next-auth/react"
 import { useEffect, useState } from "react"
-import { DataConversation, getDataConversationAction, getDataConversations, getLastDataConversationAction } from "./actions"
+import { DataConversation, getDataConversationAction, getDataConversations, getDataConversationsBySlugAction, getLastDataConversationAction } from "./actions"
 import { columns } from "./columns"
 import ConversationBox from "./conversation-box"
 import { DataTable } from "./data-table"
@@ -25,7 +25,6 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
   const [loadingChat, setLoadingChat] = useState(false)
 
   const [conversation, setConversation] = useState<DataConversation>()
-  const [client, setClient] = useState<DataClient>()
   const [dataConversations, setDataConversations] = useState<DataConversation[]>([])
 
   useEffect(() => {
@@ -56,33 +55,17 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
 
   useEffect(() => {
 
-    getDataClientBySlug(slug)
-    .then(client => {
-      if (client) {
-        console.log(`Client found: ${client.nombre}`);        
-        setClient(client)
-      } else {
-        console.log("Client not found")        
-        setLoadingConversations(false)
-      }
-    })
-    .catch(error => console.log(error))
-    
-  }, [slug])
-  
-  useEffect(() => {
-    if (!client) return
-
     setLoadingConversations(true)
 
-    getDataConversations(client.id)
+    getDataConversationsBySlugAction(slug)
     .then(data => {
       if (data) setDataConversations(data)
     })
     .catch(error => console.log(error))
     .finally(() => setLoadingConversations(false))
-
-  }, [client])
+    
+  }, [slug])
+  
 
 
   if (!conversation) return <Loader className="w-6 h-6 mx-auto animate-spin" />
