@@ -55,28 +55,34 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
   
 
   useEffect(() => {
-    setLoadingConversations(true)
 
     getDataClientBySlug(slug)
     .then(client => {
       if (client) {
+        console.log(`Client found: ${client.nombre}`);        
         setClient(client)
-        getDataConversations(client.id)
-        .then(data => {
-          if (data) setDataConversations(data)
-        })
-        .catch(error => console.log(error))
-        .finally(() => setLoadingConversations(false))
       } else {
         console.log("Client not found")        
         setLoadingConversations(false)
       }
     })
     .catch(error => console.log(error))
-    .finally(() => setLoadingConversations(false))
     
   }, [slug])
   
+  useEffect(() => {
+    if (!client) return
+
+    setLoadingConversations(true)
+
+    getDataConversations(client.id)
+    .then(data => {
+      if (data) setDataConversations(data)
+    })
+    .catch(error => console.log(error))
+    .finally(() => setLoadingConversations(false))
+
+  }, [client])
 
 
   if (!conversation) return <Loader className="w-6 h-6 mx-auto animate-spin" />
