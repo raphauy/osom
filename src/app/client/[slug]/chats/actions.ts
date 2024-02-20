@@ -106,7 +106,7 @@ export async function getDataConversationsBySlugAction(slug: string) {
    
     const conversations= await getConversationsOfClient(client.id)
 
-    console.log("conversations count: ", conversations.length);
+    console.log("conversations count: ", conversations.length + " for client: ", client.name)
 
     const data: DataConversation[]= conversations.map(conversation => getData(conversation))
     

@@ -8,6 +8,7 @@ import { DataConversation, getDataConversationAction, getDataConversations, getD
 import { columns } from "./columns"
 import ConversationBox from "./conversation-box"
 import { DataTable } from "./data-table"
+import { fi } from "date-fns/locale"
 
 interface Props {
   params: {
@@ -26,6 +27,8 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
 
   const [conversation, setConversation] = useState<DataConversation>()
   const [dataConversations, setDataConversations] = useState<DataConversation[]>([])
+
+  const [firstLoad, setFirstLoad] = useState(true)
 
   useEffect(() => {
     setLoadingChat(true)
@@ -55,6 +58,11 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
 
   useEffect(() => {
 
+    if (firstLoad) {
+      setFirstLoad(false)
+      return
+    }
+
     setLoadingConversations(true)
 
     getDataConversationsBySlugAction(slug)
@@ -64,7 +72,7 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
     .catch(error => console.log(error))
     .finally(() => setLoadingConversations(false))
     
-  }, [slug])
+  }, [slug, firstLoad])
   
 
 
