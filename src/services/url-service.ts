@@ -26,8 +26,8 @@ export async function getIdFromUrl(url: string): Promise<string | null> {
 
     if (source === "CASAYMAS") {
         return getIdFromCasasymas(url)
-    // } else if (source === "ML") {
-    //     return await getIdFromML(url)
+    } else if (source === "ML") {
+        return await getIdFromML(url)
     }
     return null    
 }
@@ -53,12 +53,11 @@ export function getIdFromCasasymas(url: string): string | null {
 
 export async function getIdFromML(url: string): Promise<string | null> {
     // Verifica que la URL comience con el patrón específico de MercadoLibre
-    const patronBase = 'https://casa.mercadolibre.com.uy/';
-    if (!url.startsWith(patronBase)) {
+    const patronBaseRegex = /^https:\/\/\w+\.mercadolibre\.com\.uy\//;
+    if (!patronBaseRegex.test(url)) {
         console.log('La URL no sigue el patrón especificado de MercadoLibre.');
         return null;
     }
-
     // Extrae la parte del identificador en la URL
     const regex = /MLU-\d+/;
     const coincidencia = url.match(regex);
@@ -69,9 +68,11 @@ export async function getIdFromML(url: string): Promise<string | null> {
     }
 
     // Elimina el guion del identificador encontrado
-    const MLUId = coincidencia[0].replace('-', '');
+    const MLUId = coincidencia[0].replace('-', '')
+    console.log('MLUId:', MLUId)    
 
-    const propertyId = await getIdFromMLJson(`https://api.mercadolibre.com/items/${MLUId}#json`);
+    const propertyId = await getIdFromMLJson(`https://api.mercadolibre.com/items/${MLUId}#json`)
+    console.log('propertyId:', propertyId)
 
     return propertyId;
     
