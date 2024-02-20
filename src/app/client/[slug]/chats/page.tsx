@@ -67,13 +67,14 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
         })
         .catch(error => console.log(error))
         .finally(() => setLoadingConversations(false))
+      } else {
+        console.log("Client not found")        
+        setLoadingConversations(false)
       }
     })
     .catch(error => console.log(error))
     .finally(() => setLoadingConversations(false))
     
-    setLoadingConversations(false)
-
   }, [slug])
   
 
