@@ -58,8 +58,8 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
     setLoadingConversations(true)
 
     getDataConversationsBySlugAction(slug)
-    .then(data => {
-      if (data) setDataConversations(data)
+    .then(conversations => {
+      setDataConversations(conversations)
     })
     .catch(error => console.log(error))
     .finally(() => setLoadingConversations(false))
@@ -75,9 +75,6 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
   const user= session.data?.user
 
   const isAdmin= user?.role === "admin"
-
-  // if (!client) 
-  //   return <Loader className="w-6 h-6 mx-auto animate-spin" />
 
   return (
     <div className="flex flex-grow w-full">

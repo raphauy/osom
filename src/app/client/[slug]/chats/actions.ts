@@ -103,7 +103,10 @@ export async function getDataConversationsBySlugAction(slug: string) {
         console.log("Client not found by slug: ", slug)        
         return []
     }
+   
     const conversations= await getConversationsOfClient(client.id)
+
+    console.log("conversations count: ", conversations.length);
 
     const data: DataConversation[]= conversations.map(conversation => getData(conversation))
     
