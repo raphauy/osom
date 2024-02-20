@@ -65,6 +65,8 @@ export default function ChatPage({ searchParams: { id }, params: { slug } }: Pro
         .then(data => {
           if (data) setDataConversations(data)
         })
+        .catch(error => console.log(error))
+        .finally(() => setLoadingConversations(false))
       }
     })
     .catch(error => console.log(error))
