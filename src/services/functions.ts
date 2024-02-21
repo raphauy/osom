@@ -152,7 +152,7 @@ export async function notifyColleagueRequest(clientId: string){
   const client= await getClient(clientId)
   const collegueMessage= client?.colleaguesMessage
 
-  const res= "Notificación exitosa. Debes enviar exactamente el siguiente mensaje al usuario colega. Mensaje: " + collegueMessage
+  const res= "Notificación exitosa. Debes enviar exactamente el siguiente mensaje al usuario colega y puedes formatearlo para que se vea bien en whatsapp. Mensaje: " + collegueMessage
   console.log(res)  
 
   return res
