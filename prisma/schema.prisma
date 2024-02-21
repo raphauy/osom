@@ -76,6 +76,7 @@ model Client {
   prompt                String?   @db.Text
   promptTokensPrice     Float      @default(0)
   completionTokensPrice Float  @default(0)
+  colleaguesMessage     String?   @db.Text @default("Estimado colega, gracias por contactarnos. Nos comunicaremos a la brevedad.")
 }
 
 model Property {

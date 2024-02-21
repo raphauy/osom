@@ -148,3 +148,16 @@ export async function setTokensPrice(clientId: string, promptTokensPrice: number
 
   return client   
 }
+
+export async function setColleaguesMessage(clientId: string, colleaguesMessage: string) {
+  const client= await prisma.client.update({
+    where: {
+      id: clientId
+    },
+    data: {
+      colleaguesMessage
+    }
+  })
+
+  return client
+}

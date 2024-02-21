@@ -24,6 +24,7 @@ export type DataClient = {
     prompt?: string | null
     promptTokensPrice?: number | null
     completionTokensPrice?: number | null
+    colleaguesMessage?: string | null
   }
     
 
@@ -45,7 +46,8 @@ export async function getDataClient(clientId: string): Promise<DataClient | null
         budgetPercMax: client.budgetPercMax || 20,
         prompt: client.prompt,
         promptTokensPrice: client.promptTokensPrice,
-        completionTokensPrice: client.completionTokensPrice
+        completionTokensPrice: client.completionTokensPrice,
+        colleaguesMessage: client.colleaguesMessage
     }
     return data
 }
@@ -71,7 +73,8 @@ export async function getDataClientOfUser(userId: string): Promise<DataClient | 
         budgetPercMax: client.budgetPercMax || 20,    
         prompt: client.prompt,
         promptTokensPrice: client.promptTokensPrice,
-        completionTokensPrice: client.completionTokensPrice
+        completionTokensPrice: client.completionTokensPrice,
+        colleaguesMessage: client.colleaguesMessage
     }
     return data
 }
@@ -95,7 +98,8 @@ export async function getDataClientBySlug(slug: string): Promise<DataClient | nu
         budgetPercMax: client.budgetPercMax || 20,
         prompt: client.prompt,
         promptTokensPrice: client.promptTokensPrice,
-        completionTokensPrice: client.completionTokensPrice
+        completionTokensPrice: client.completionTokensPrice,
+        colleaguesMessage: client.colleaguesMessage
     }
     return data
 }
@@ -127,7 +131,8 @@ export async function getDataClients() {
                 budgetPercMax: client.budgetPercMax || 20,
                 prompt: client.prompt,
                 promptTokensPrice: client.promptTokensPrice,
-                completionTokensPrice: client.completionTokensPrice
+                completionTokensPrice: client.completionTokensPrice,
+                colleaguesMessage: client.colleaguesMessage
             };
         })
     );
@@ -182,4 +187,11 @@ export async function updatePrompt(json: PromptFormValues) {
     setPrompt(json.prompt, json.clienteId)
 
     revalidatePath(`/admin/prompts`)
+}
+
+export async function getColleguesMessageAction(clientId: string): Promise<string | null>{
+    const client= await getClient(clientId)
+    if (!client) return null
+
+    return client.colleaguesMessage
 }

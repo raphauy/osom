@@ -3,6 +3,7 @@ import { ConfigDialog } from "./config-dialogs"
 import { DataTable } from "./config-table"
 import { columns } from "./config-columns"
 import { getCurrentUser } from "@/lib/auth"
+import APIToken from "../config/api-token"
 
 export default async function UsersPage() {
   let data = await getConfigsDAO()
@@ -12,6 +13,8 @@ export default async function UsersPage() {
   if (!isSuperAdmin) {
     data= data.filter((item) => item.name !== "PROCESS_BLOCKED")
   }
+
+  const API_TOKEN= process.env.API_TOKEN || "No configurado"
 
   return (
     <div className="w-full">
@@ -24,6 +27,9 @@ export default async function UsersPage() {
 
       <div className="container p-3 py-4 mx-auto border rounded-md text-muted-foreground dark:text-white">
         <DataTable columns={columns} data={data} subject="Config" />
+      </div>
+      <div className="mt-10">
+        <APIToken apiToken={API_TOKEN} />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 import { OpenAI } from "openai";
-import { PropiedadResult, functions, getProperties, getPropertiesByMultipleURL, getPropertyByReference, getPropertyByURL, getProyecto, notifyHuman } from "./functions";
+import { PropiedadResult, functions, getProperties, getPropertiesByMultipleURL, getPropertyByReference, getPropertyByURL, getProyecto, notifyColleagueRequest, notifyHuman } from "./functions";
 import { sendWapMessage } from "./osomService";
 import { ChatCompletionMessageParam, ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam } from "openai/resources/index.mjs";
 import { format, set } from "date-fns";
@@ -204,6 +204,7 @@ export async function processMessage(id: string) {
   let assistantResponse: string | null = ""
 	let content: PropiedadResult[] | string | PropiedadResult = []
   let notificarAgente = false
+  let notificarColega = false
   let gptDataArray: gptPropertyData[] = []
 	// Step 2: Check if ChatGPT wants to use a function
 	if(wantsToUseFunction){
@@ -251,6 +252,7 @@ export async function processMessage(id: string) {
       await setSearch(conversation.id, operacion, tipo, presupuesto, zona)
 
     }
+
 		if(initialResponse.choices[0].message.function_call.name == "notifyHuman"){
 			content = await notifyHuman(conversation.clientId)
 			messages.push(initialResponse.choices[0].message)
@@ -260,6 +262,18 @@ export async function processMessage(id: string) {
 				content: JSON.stringify(content),
 			})
       notificarAgente = true
+		}
+
+    if(initialResponse.choices[0].message.function_call.name == "notifyColleagueRequest"){
+			content = await notifyColleagueRequest(conversation.clientId)
+			messages.push(initialResponse.choices[0].message)
+			messages.push({
+				role: "function",
+				name: "notifyColleagueRequest", 
+				content: JSON.stringify(content),
+			})
+      notificarAgente = true
+      notificarColega = true
 		}
 
     if(initialResponse.choices[0].message.function_call.name == "getPropertyByURL"){
@@ -350,7 +364,7 @@ export async function processMessage(id: string) {
   }
 
   if (assistantResponse) {
-    sendWapMessage(conversation.phone, assistantResponse, notificarAgente, conversation.clientId)
+    sendWapMessage(conversation.phone, assistantResponse, notificarAgente, notificarColega, conversation.clientId)
   } else {
     console.log("assistantResponse is null")
   }   

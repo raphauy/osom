@@ -2,11 +2,15 @@ import axios from 'axios';
 import https from 'https';
 import { getClient } from './clientService';
 
-export async function sendWapMessage(phone: string, body: string, notificarAgente: boolean, clientId: string): Promise<void> {
+export async function sendWapMessage(phone: string, body: string, notificarAgente: boolean, notificarColega: boolean, clientId: string): Promise<void> {
   const agente= notificarAgente ? 1 : 0
+  const colega= notificarColega ? 1 : 0
 
   if (notificarAgente)
     console.log("Notificando agente a Osom")
+
+  if (notificarColega)
+    console.log("Notificando colega a Osom")
 
   const client= await getClient(clientId)
   if (!client) throw new Error("Client not found")
@@ -30,7 +34,8 @@ export async function sendWapMessage(phone: string, body: string, notificarAgent
   const data = {
     phone,
     body: text,
-    agente
+    agente,
+    colega
   } 
 
   const attempts= 3

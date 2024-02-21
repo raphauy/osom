@@ -1,3 +1,4 @@
+import { getClient } from "./clientService";
 import { getPropertyFromClientById, getPropertyFromClientByURL, similaritySearchProyecto, similaritySearchV2 } from "./propertyService";
 
 export const functions= [
@@ -31,6 +32,16 @@ export const functions= [
       },
       required: ["tipo","operacion","presupuesto","zona","description"],
     },    
+  },
+  {
+    name: "notifyColleagueRequest",
+    description:
+      "Se debe invocar esta función para notificar que un colega solicita compartir una propiedad. Generalmente dicen cosas como 'quiero compartir esta propiedad', también pueden preguntar 'comparten esta propiedad?'. A veces utilizan una URL de la propiedad que quieren compartir.",
+    parameters: {
+      type: "object",
+      properties: {},
+      required: [],
+    },
   },
   {
     name: "notifyHuman",
@@ -133,6 +144,18 @@ export async function getProperties(tipo: string, operacion: string, presupuesto
   })            
 
   return responseData
+}
+
+export async function notifyColleagueRequest(clientId: string){
+  console.log("notifyColleagueRequest")
+
+  const client= await getClient(clientId)
+  const collegueMessage= client?.colleaguesMessage
+
+  const res= "Notificación exitosa. Debes enviar exactamente el siguiente mensaje al usuario colega. Mensaje: " + collegueMessage
+  console.log(res)  
+
+  return res
 }
 
 export async function notifyHuman(clientId: string){
@@ -244,6 +267,8 @@ export async function runFunction(name: string, args: any, clientId: string) {
       return getProyecto(args["nombre"], clientId);
     case "getPropertiesByMultipleURL":
       return getPropertiesByMultipleURL(args["urlArray"], clientId);
+    case "notifyColleagueRequest":
+      return notifyColleagueRequest(clientId);
     default:
       return null;
   }

@@ -1,6 +1,7 @@
 
 import { DataClient, getDataClient } from "../clients/(crud)/actions"
 import BudgetPerc from "./budget-perc"
+import Colleagues from "./colleagues"
 import Hook from "./hook"
 import TokensPrice from "./tokens-price"
 
@@ -17,6 +18,7 @@ export default async function ClientConfig({ client }: Props) {
                 <Hook basePath={BASE_PATH} />
                 <BudgetPerc clientId={client.id} budgetPercMin={client.budgetPercMin} budgetPercMax={client.budgetPercMax} />
                 <TokensPrice clientId={client.id} promptTokensPrice={client.promptTokensPrice} completionTokensPrice={client.completionTokensPrice} />
+                <Colleagues clientId={client.id} colleaguesMessage={client.colleaguesMessage || ''} />
             </div>
         </div>
     )
