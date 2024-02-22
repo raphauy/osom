@@ -358,6 +358,11 @@ export async function processMessage(id: string) {
   console.log("assistantResponse: ", assistantResponse)  
 
   if (assistantResponse) {
+    if (assistantResponse.includes("notifyHuman") || assistantResponse.includes("notifyColleagueRequest")) {
+      console.log(`assistantResponse includes ${assistantResponse}`)
+      assistantResponse= "Un agente inmobiliario se pondrá en contacto contigo a la brevedad."      
+    }
+
     const gptDataString= JSON.stringify(gptDataArray)
     await messageArrived(conversation.phone, assistantResponse, conversation.clientId, "assistant", gptDataString, promptTokens, completionTokens)
     console.log("message stored")
