@@ -24,7 +24,7 @@ export const columns: ColumnDef<Property>[] = [
       const data = row.original     
       return (
         <div>
-          <p>{format(data.updatedAt, "YYY-MM-dd")}</p>
+          <p>{format(data.updatedAt, "yyy-MM-dd")}</p>
           <p className="pl-2">{format(data.updatedAt, "HH:mm 'hs'")}</p>
         </div>
         

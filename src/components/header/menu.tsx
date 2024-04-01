@@ -2,6 +2,8 @@
 import { getCurrentUser } from "@/lib/auth";
 import MenuAdmin from "./menu-admin";
 import MenuOsom from "./menu-osom";
+import getClients from "@/services/clientService";
+import { InmoSelector, SelectorData } from "./inmo-selector";
 
 export default async function Menu() {
     
@@ -9,11 +11,16 @@ export default async function Menu() {
 
     if (!user) return <div></div>
 
+    const inmobiliarias= await getClients()
+    const selectorData: SelectorData[]= inmobiliarias.map(inmobiliaria => ({slug: inmobiliaria.slug, name: inmobiliaria.name}))
+
     if (user.role === "admin") 
         return (
             <div className="flex">
                 <div className="flex">
-                    <MenuAdmin /><MenuOsom />
+                    <InmoSelector selectors={selectorData} />
+                    <MenuAdmin />
+                    {/* <MenuOsom /> */}
                 </div>
             </div>
         )
