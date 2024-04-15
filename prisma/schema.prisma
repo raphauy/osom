@@ -20,7 +20,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  client        Client?    @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  client        Client?    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId      String?
 }
 
@@ -120,7 +120,7 @@ model Property {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt @default(now())
 
-  client                Client?   @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  client                Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId              String?
 
   content               String?
@@ -134,7 +134,7 @@ model Conversation {
   updatedAt   DateTime @updatedAt
   phone       String
   messages    Message[]
-  client      Client  @relation(fields: [clientId], references: [id], onDelete: NoAction)
+  client      Client  @relation(fields: [clientId], references: [id], onDelete: Cascade)
   clientId    String
   operacion   String?
   tipo        String?

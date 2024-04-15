@@ -66,7 +66,7 @@ export const columns: ColumnDef<DataClient>[] = [
       const editTrigger= (<Edit size={30} className="pr-2 hover:cursor-pointer text-sky-400"/>)
       const eliminateTrigger= (<Trash2 className="text-red-400 hover:cursor-pointer"/>)
       const title= "Eliminar Cliente"
-      const description= `Desea eliminar el cliente ${data.nombre}?`
+      const description= `Desea eliminar el cliente ${data.nombre}? Atención, se eliminará también sus propiedades, sus conversaciones y sus usuarios.`
  
       return (
         <div className="flex items-center justify-end gap-2">
