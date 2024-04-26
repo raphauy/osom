@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { prompt } from "@/services/clientService"
 import { Info } from "lucide-react"
 
-const models= ["gpt-3.5-turbo", "gpt-4"]
+const models= ["gpt-3.5-turbo", "gpt-4-turbo"]
   
 const formSchema = z.object({  
     prompt: z.string(({required_error: "Tienes que escribir un prompt."})),
