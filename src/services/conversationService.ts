@@ -179,10 +179,7 @@ export async function processMessage(id: string) {
 
   // check if the conversation requires a function call to be made
   const initialResponse = await openai.chat.completions.create({
-    // model: "gpt-3.5-turbo-0613",
-    // model: "gpt-4-0613",
-    // model: "gpt-4-1106-preview",
-    model: "gpt-4-turbo",
+    model: "gpt-4o",
     messages: messages,
     temperature: 0,
     functions,
@@ -335,10 +332,7 @@ export async function processMessage(id: string) {
 
     // second invocation of ChatGPT to respond to the function call
     let step4response = await openai.chat.completions.create({
-      //model: "gpt-3.5-turbo-0613",
-      // model: "gpt-4-0613",
-      // model: "gpt-4-1106-preview",
-      model: "gpt-4-turbo",
+      model: "gpt-4o",
       messages,
     });
     const usage= step4response.usage
