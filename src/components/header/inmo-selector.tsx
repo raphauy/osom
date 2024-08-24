@@ -91,9 +91,10 @@ export function InmoSelector({ selectors }: Props) {
                           setValue("")
                         } else {
                           setValue(currentValue)
-                          let restOfPath = path.split("/").slice(3).join("/")
+                          //let restOfPath = path.split("/").slice(3).join("/")
+                          // router.push(`/client/${inmo.slug}/${restOfPath}?${search}`)
                           
-                          router.push(`/client/${inmo.slug}/${restOfPath}?${search}`)
+                          router.push(`/client/${inmo.slug}?${search}`)
                         }
                         setSearchValue("")
                         setOpen(false)
